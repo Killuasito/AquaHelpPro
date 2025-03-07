@@ -113,7 +113,10 @@ const Header = () => {
                   scrolled ? "text-blue-600" : "text-white"
                 }`}
               >
-                AquaHelp<span className="text-blue-100">Pro</span>
+                AquaHelp
+                <span className={scrolled ? "text-blue-500" : "text-blue-100"}>
+                  Pro
+                </span>
               </h1>
               <div className="hidden md:block">
                 <p
@@ -233,19 +236,6 @@ const Header = () => {
                 </motion.li>
               );
             })}
-
-            <li>
-              <Link
-                to="/profile"
-                className={`ml-2 px-5 py-2 rounded-full transition-all ${
-                  scrolled
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-white hover:bg-blue-50 text-blue-600 hover:text-blue-700"
-                }`}
-              >
-                <span className="font-medium">Minha Conta</span>
-              </Link>
-            </li>
           </ul>
         </nav>
 
@@ -400,24 +390,6 @@ const Header = () => {
                     </React.Fragment>
                   );
                 })}
-
-                <motion.li
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: navItems.length * 0.1 }}
-                  className="py-3"
-                >
-                  <Link
-                    to="/profile"
-                    className={`flex justify-center items-center px-5 py-3 rounded-lg ${
-                      scrolled
-                        ? "bg-blue-600 hover:bg-blue-700 text-white"
-                        : "bg-white text-blue-600 hover:bg-blue-50"
-                    }`}
-                  >
-                    <span className="font-medium">Minha Conta</span>
-                  </Link>
-                </motion.li>
               </ul>
             </nav>
           </motion.div>
