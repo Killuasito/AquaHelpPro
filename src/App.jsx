@@ -20,6 +20,7 @@ import BeginnerGuide from "./pages/BeginnerGuide";
 import FishSpecies from "./pages/FishSpecies";
 import ParameterCalculator from "./pages/ParameterCalculator";
 import MaintenanceCalendar from "./pages/MaintenanceCalendar";
+import PlantSpecies from "./pages/PlantSpecies";
 
 // Create a component to wrap Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -89,6 +90,14 @@ function AnimatedRoutes() {
           element={
             <PageTransition>
               <MaintenanceCalendar />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/plant-species"
+          element={
+            <PageTransition>
+              <PlantSpecies />
             </PageTransition>
           }
         />

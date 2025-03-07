@@ -13,6 +13,7 @@ import {
   FaCalculator,
   FaCalendarAlt,
   FaBookOpen,
+  FaLeaf,
 } from "react-icons/fa";
 
 const Header = () => {
@@ -38,6 +39,11 @@ const Header = () => {
           icon: <FaBookOpen />,
         },
         { path: "/fish-species", text: "Espécies de Peixes", icon: <FaFish /> },
+        {
+          path: "/plant-species",
+          text: "Espécies de Plantas",
+          icon: <FaLeaf />,
+        },
         {
           path: "/parameter-calculator",
           text: "Calculadora de Parâmetros",

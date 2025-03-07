@@ -442,6 +442,21 @@ const FishSpecies = () => {
     setCurrentPage(1);
   }, [searchTerm, filterType]);
 
+  const scrollToTop = () => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage === currentPage) return;
+    setCurrentPage(newPage);
+    scrollToTop();
+  };
+
   return (
     <motion.div
       className="max-w-7xl mx-auto px-4 py-8"
@@ -587,56 +602,83 @@ const FishSpecies = () => {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="mt-8 flex justify-center gap-2">
+            <div className="mt-8 flex flex-wrap justify-center gap-2">
               <button
-                onClick={() => setCurrentPage(1)}
+                onClick={() => handlePageChange(1)}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-3 py-1 rounded-lg ${
                   currentPage === 1
                     ? "bg-gray-100 text-gray-400"
                     : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
-                Primeira
+                1
               </button>
-              <button
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg ${
-                  currentPage === 1
-                    ? "bg-gray-100 text-gray-400"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
-              >
-                Anterior
-              </button>
-              <div className="flex items-center px-4">
-                <span className="text-gray-600">
-                  Página {currentPage} de {totalPages}
-                </span>
+
+              {currentPage > 3 && <span className="px-2 py-1">...</span>}
+
+              {Array.from({ length: 3 }, (_, i) => {
+                const pageNum = currentPage + i - 1;
+                if (pageNum > 1 && pageNum < totalPages) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1 rounded-lg ${
+                        pageNum === currentPage
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+
+              {currentPage < totalPages - 2 && (
+                <span className="px-2 py-1">...</span>
+              )}
+
+              {totalPages > 1 && (
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-1 rounded-lg ${
+                    currentPage === totalPages
+                      ? "bg-gray-100 text-gray-400"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                >
+                  {totalPages}
+                </button>
+              )}
+
+              <div className="w-full md:w-auto flex justify-center gap-2 mt-2 md:mt-0">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`px-3 py-1 rounded-lg ${
+                    currentPage === 1
+                      ? "bg-gray-100 text-gray-400"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-1 rounded-lg ${
+                    currentPage === totalPages
+                      ? "bg-gray-100 text-gray-400"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                >
+                  Próxima
+                </button>
               </div>
-              <button
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-lg ${
-                  currentPage === totalPages
-                    ? "bg-gray-100 text-gray-400"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
-              >
-                Próxima
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-lg ${
-                  currentPage === totalPages
-                    ? "bg-gray-100 text-gray-400"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
-              >
-                Última
-              </button>
             </div>
           )}
         </>

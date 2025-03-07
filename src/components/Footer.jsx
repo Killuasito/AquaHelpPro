@@ -17,6 +17,7 @@ import {
   FaBookOpen,
   FaCalculator,
   FaCalendarAlt,
+  FaLeaf,
 } from "react-icons/fa";
 
 const Footer = () => {
@@ -45,6 +46,7 @@ const Footer = () => {
           url: "/maintenance-calendar",
           icon: <FaCalendarAlt />,
         },
+        { text: "Plantas Aquáticas", url: "/plant-species", icon: <FaLeaf /> },
       ],
     },
   ];
