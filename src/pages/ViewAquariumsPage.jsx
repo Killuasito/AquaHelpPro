@@ -22,8 +22,17 @@ import {
   FaRuler,
   FaChevronDown,
   FaSave,
+  FaStopwatch,
+  FaNotesMedical,
+  FaChartArea,
+  FaClipboardCheck,
+  FaBell,
+  FaExclamationCircle,
+  FaCheckCircle, // Add this import
+  FaExclamationTriangle, // Add this import if not already present
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { useAquariumUpdates } from "../hooks/useAquariumUpdates";
 
 const ViewAquariumsPage = () => {
   const navigate = useNavigate();
@@ -36,6 +45,32 @@ const ViewAquariumsPage = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingAquarium, setEditingAquarium] = useState(null);
+  const [showHealthStatus, setShowHealthStatus] = useState(false);
+  const [parameterHistory, setParameterHistory] = useState([]);
+  const [maintenanceAlerts, setMaintenanceAlerts] = useState([]);
+  const [quickNotes, setQuickNotes] = useState(() => {
+    const savedNotes = localStorage.getItem(`aquarium-notes`);
+    return savedNotes ? JSON.parse(savedNotes) : [];
+  });
+
+  const addQuickNote = (aquariumId, note) => {
+    const newNote = {
+      id: Date.now(),
+      aquariumId,
+      content: note,
+      date: new Date().toISOString(),
+    };
+    setQuickNotes((prev) => [newNote, ...prev]);
+  };
+
+  const deleteQuickNote = (noteId) => {
+    setQuickNotes((prev) => prev.filter((note) => note.id !== noteId));
+  };
+
+  // Save notes to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem(`aquarium-notes`, JSON.stringify(quickNotes));
+  }, [quickNotes]);
 
   // Load aquariums from localStorage on component mount
   useEffect(() => {
@@ -157,6 +192,111 @@ const ViewAquariumsPage = () => {
       border: "border-green-200",
       hover: "hover:bg-green-200",
     },
+  };
+
+  // Função para verificar status de saúde do aquário
+  const checkAquariumHealth = (aquarium) => {
+    if (!aquarium) return { status: "unknown", issues: [] };
+
+    const issues = [];
+    const now = new Date();
+    const lastUpdate = new Date(aquarium.lastUpdated);
+    const daysSinceUpdate = Math.floor(
+      (now - lastUpdate) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysSinceUpdate > 7) {
+      issues.push("Parâmetros não atualizados há mais de 7 dias");
+    }
+    if (aquarium.temperature < 24 || aquarium.temperature > 28) {
+      issues.push("Temperatura fora da faixa ideal");
+    }
+    if (aquarium.waterPh < 6.5 || aquarium.waterPh > 7.5) {
+      issues.push("pH fora da faixa ideal");
+    }
+
+    return {
+      status: issues.length === 0 ? "healthy" : "attention",
+      issues,
+    };
+  };
+
+  const getMaintenanceAlerts = (aquarium) => {
+    const alerts = [];
+    const now = new Date();
+    const lastUpdate = new Date(aquarium.lastUpdated);
+    const daysSinceUpdate = Math.floor(
+      (now - lastUpdate) / (1000 * 60 * 60 * 24)
+    );
+
+    // Alerta de troca de água
+    const waterChangeAlert = {
+      icon: <FaStopwatch className="text-orange-500" />,
+      title: "Troca de Água",
+      value: "",
+      description: "",
+      status: "normal",
+    };
+
+    if (daysSinceUpdate >= 7) {
+      waterChangeAlert.value = "Atrasada";
+      waterChangeAlert.description = `Última troca há ${daysSinceUpdate} dias`;
+      waterChangeAlert.status = "danger";
+    } else {
+      const daysUntil = 7 - daysSinceUpdate;
+      waterChangeAlert.value = `Em ${daysUntil} dias`;
+      waterChangeAlert.description = "Troca parcial de água programada";
+    }
+    alerts.push(waterChangeAlert);
+
+    // Alerta de parâmetros
+    const paramsAlert = {
+      icon: <FaChartArea className="text-blue-500" />,
+      title: "Parâmetros",
+      value: "",
+      description: "",
+      status: "normal",
+    };
+
+    if (aquarium.waterPh < 6.5 || aquarium.waterPh > 7.5) {
+      paramsAlert.value = "Atenção";
+      paramsAlert.description = "pH fora da faixa ideal";
+      paramsAlert.status = "warning";
+    }
+    if (aquarium.temperature < 24 || aquarium.temperature > 28) {
+      paramsAlert.value = "Atenção";
+      paramsAlert.description = paramsAlert.description
+        ? `${paramsAlert.description}, temperatura fora da faixa`
+        : "Temperatura fora da faixa ideal";
+      paramsAlert.status = "warning";
+    }
+    if (paramsAlert.status === "normal") {
+      paramsAlert.value = "Normais";
+      paramsAlert.description = "Parâmetros dentro da faixa ideal";
+    }
+    alerts.push(paramsAlert);
+
+    // Alerta de manutenção do filtro
+    const filterAlert = {
+      icon: <FaClipboardCheck className="text-green-500" />,
+      title: "Manutenção do Filtro",
+      value: "",
+      description: "",
+      status: "normal",
+    };
+
+    if (daysSinceUpdate >= 30) {
+      filterAlert.value = "Necessária";
+      filterAlert.description = "Manutenção do filtro recomendada";
+      filterAlert.status = "warning";
+    } else {
+      const daysUntil = 30 - daysSinceUpdate;
+      filterAlert.value = `Em ${daysUntil} dias`;
+      filterAlert.description = "Próxima manutenção programada";
+    }
+    alerts.push(filterAlert);
+
+    return alerts;
   };
 
   return (
@@ -419,6 +559,13 @@ const ViewAquariumsPage = () => {
             typeColorClasses={typeColorClasses}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            checkAquariumHealth={checkAquariumHealth} // Pass the function as prop
+            getMaintenanceAlerts={getMaintenanceAlerts} // Add this line
+            quickNotes={quickNotes.filter(
+              (note) => note.aquariumId === selectedAquarium.id
+            )}
+            onAddNote={addQuickNote}
+            onDeleteNote={deleteQuickNote}
           />
         </motion.div>
       ) : (
@@ -556,152 +703,325 @@ const DetailView = ({
   typeColorClasses,
   onEdit,
   onDelete,
+  checkAquariumHealth,
+  getMaintenanceAlerts, // Add this prop
+  quickNotes,
+  onAddNote,
+  onDeleteNote,
 }) => {
+  const [newNote, setNewNote] = useState("");
+  const { updates, clearUpdate } = useAquariumUpdates(aquarium);
+
+  const handleAddNote = () => {
+    if (!newNote.trim()) return;
+    onAddNote(aquarium.id, newNote);
+    setNewNote("");
+  };
+
   const colorType = getTypeColor(aquarium.aquariumType);
   const colors = typeColorClasses[colorType];
+  const health = checkAquariumHealth(aquarium);
+  const alerts = getMaintenanceAlerts(aquarium);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className={`${colors.bg} p-6`}>
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-            <FaFish className={`mr-3 ${colors.text}`} />
-            {aquarium.aquariumName}
-          </h2>
+    <div className="space-y-6">
+      {/* Notificações em tempo real */}
+      <AnimatePresence>
+        {updates.map((update) => (
+          <motion.div
+            key={update.id}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg border ${
+              update.priority === "urgent"
+                ? "bg-red-50 border-red-200"
+                : update.priority === "high"
+                ? "bg-yellow-50 border-yellow-200"
+                : "bg-blue-50 border-blue-200"
+            }`}
+          >
+            <div className="flex justify-between items-start">
+              <div className="flex items-center">
+                {update.priority === "urgent" && (
+                  <FaExclamationTriangle className="text-red-500 mr-2" />
+                )}
+                {update.priority === "high" && (
+                  <FaExclamationCircle className="text-yellow-500 mr-2" />
+                )}
+                {update.priority === "medium" && (
+                  <FaInfoCircle className="text-blue-500 mr-2" />
+                )}
+                <div>
+                  <p
+                    className={`font-medium ${
+                      update.priority === "urgent"
+                        ? "text-red-700"
+                        : update.priority === "high"
+                        ? "text-yellow-700"
+                        : "text-blue-700"
+                    }`}
+                  >
+                    {update.message}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(update.date).toLocaleTimeString()}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => clearUpdate(update.id)}
+                className="ml-4 text-gray-400 hover:text-gray-600"
+              >
+                <FaTimes />
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
-          <div className="flex space-x-2">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
-              onClick={() => onEdit(aquarium.id)}
-              aria-label="Editar"
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className={`${colors.bg} p-6`}>
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+              <FaFish className={`mr-3 ${colors.text}`} />
+              {aquarium.aquariumName}
+            </h2>
+
+            <div className="flex space-x-2">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
+                onClick={() => onEdit(aquarium.id)}
+                aria-label="Editar"
+              >
+                <FaEdit />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition"
+                onClick={() => onDelete(aquarium.id)}
+                aria-label="Excluir"
+              >
+                <FaTrash />
+              </motion.button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 mt-4">
+            <span
+              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${colors.bg} ${colors.text}`}
             >
-              <FaEdit />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition"
-              onClick={() => onDelete(aquarium.id)}
-              aria-label="Excluir"
-            >
-              <FaTrash />
-            </motion.button>
+              {getAquariumTypeLabel(aquarium.aquariumType)}
+            </span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
+              {aquarium.capacity} litros
+            </span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+              {aquarium.temperature}°C
+            </span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+              pH {aquarium.waterPh}
+            </span>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 mt-4">
-          <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${colors.bg} ${colors.text}`}
-          >
-            {getAquariumTypeLabel(aquarium.aquariumType)}
-          </span>
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
-            {aquarium.capacity} litros
-          </span>
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">
-            {aquarium.temperature}°C
-          </span>
-          <span className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
-            pH {aquarium.waterPh}
-          </span>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3
+                className={`text-lg font-semibold ${colors.text} mb-4 pb-2 border-b ${colors.border}`}
+              >
+                Informações Gerais
+              </h3>
+
+              <div className="space-y-4">
+                <DetailSection
+                  icon={<FaFish className={colors.text} />}
+                  title="Espécies de Peixes"
+                  content={aquarium.fishSpecies}
+                />
+
+                <DetailSection
+                  icon={<FaTint className={colors.text} />}
+                  title="Rotina de Troca de Água"
+                  content={aquarium.waterChange}
+                />
+              </div>
+
+              {aquarium.notes && (
+                <div className="mt-6">
+                  <h4 className={`font-medium ${colors.text} mb-2`}>
+                    Observações
+                  </h4>
+                  <div
+                    className={`p-4 rounded-lg ${
+                      colors.bg
+                    } ${colors.text.replace("700", "600")}`}
+                  >
+                    <p>{aquarium.notes}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h3
+                className={`text-lg font-semibold ${colors.text} mb-4 pb-2 border-b ${colors.border}`}
+              >
+                Parâmetros e Manutenção
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <ParameterCard
+                  icon={<FaFlask />}
+                  label="pH da Água"
+                  value={aquarium.waterPh}
+                  colorClass={colors.text}
+                />
+
+                <ParameterCard
+                  icon={<FaThermometerHalf />}
+                  label="Temperatura"
+                  value={`${aquarium.temperature}°C`}
+                  colorClass={colors.text}
+                />
+
+                <ParameterCard
+                  icon={<FaFlask />}
+                  label="Capacidade"
+                  value={`${aquarium.capacity} L`}
+                  colorClass={colors.text}
+                />
+
+                <ParameterCard
+                  icon={<FaSort />}
+                  label="Atualizado em"
+                  value={new Date(aquarium.lastUpdated).toLocaleDateString(
+                    "pt-BR"
+                  )}
+                  colorClass={colors.text}
+                />
+              </div>
+
+              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-100 rounded-lg flex">
+                <FaInfoCircle className="text-yellow-500 mr-3 mt-1" />
+                <div>
+                  <h4 className="font-medium text-yellow-700 mb-1">
+                    Dica de Manutenção
+                  </h4>
+                  <p className="text-sm text-yellow-600">
+                    Para este tipo de aquário, recomenda-se verificar o pH e
+                    temperatura a cada 2-3 dias e realizar trocas parciais de
+                    água conforme sua programação.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Novo painel de saúde */}
+        <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100">
+          <h3 className="text-lg font-semibold text-blue-800 mb-4">
+            Status de Saúde do Aquário
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div
+              className={`p-4 rounded-lg ${
+                health.status === "healthy"
+                  ? "bg-green-50 border-green-200"
+                  : "bg-yellow-50 border-yellow-200"
+              } border`}
+            >
+              <div className="flex items-center mb-3">
+                {health.status === "healthy" ? (
+                  <FaCheckCircle className="text-green-500 mr-2" />
+                ) : (
+                  <FaExclamationCircle className="text-yellow-500 mr-2" />
+                )}
+                <span className="font-medium">
+                  {health.status === "healthy" ? "Saudável" : "Requer Atenção"}
+                </span>
+              </div>
+              {health.issues.length > 0 && (
+                <ul className="space-y-2">
+                  {health.issues.map((issue, index) => (
+                    <li
+                      key={index}
+                      className="text-sm text-gray-600 flex items-start"
+                    >
+                      <FaExclamationTriangle className="text-yellow-500 mr-2 mt-1" />
+                      {issue}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <h3
-              className={`text-lg font-semibold ${colors.text} mb-4 pb-2 border-b ${colors.border}`}
+      {/* Alertas de Manutenção */}
+      <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">
+            <FaBell className="inline-block mr-2 text-yellow-500" />
+            Alertas de Manutenção
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {alerts.map((alert, index) => (
+            <AlertCard
+              key={index}
+              icon={alert.icon}
+              title={alert.title}
+              value={alert.value}
+              description={alert.description}
+              status={alert.status}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Sistema de notas rápidas */}
+      <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">
+            <FaNotesMedical className="inline-block mr-2 text-blue-500" />
+            Notas Rápidas
+          </h3>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Adicionar nota..."
+              className="px-3 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+            <button
+              onClick={handleAddNote}
+              className="text-blue-600 hover:text-blue-700 p-2"
             >
-              Informações Gerais
-            </h3>
-
-            <div className="space-y-4">
-              <DetailSection
-                icon={<FaFish className={colors.text} />}
-                title="Espécies de Peixes"
-                content={aquarium.fishSpecies}
-              />
-
-              <DetailSection
-                icon={<FaTint className={colors.text} />}
-                title="Rotina de Troca de Água"
-                content={aquarium.waterChange}
-              />
-            </div>
-
-            {aquarium.notes && (
-              <div className="mt-6">
-                <h4 className={`font-medium ${colors.text} mb-2`}>
-                  Observações
-                </h4>
-                <div
-                  className={`p-4 rounded-lg ${colors.bg} ${colors.text.replace(
-                    "700",
-                    "600"
-                  )}`}
-                >
-                  <p>{aquarium.notes}</p>
-                </div>
-              </div>
-            )}
+              <FaPlus />
+            </button>
           </div>
-
-          <div>
-            <h3
-              className={`text-lg font-semibold ${colors.text} mb-4 pb-2 border-b ${colors.border}`}
-            >
-              Parâmetros e Manutenção
-            </h3>
-
-            <div className="grid grid-cols-2 gap-4">
-              <ParameterCard
-                icon={<FaFlask />}
-                label="pH da Água"
-                value={aquarium.waterPh}
-                colorClass={colors.text}
-              />
-
-              <ParameterCard
-                icon={<FaThermometerHalf />}
-                label="Temperatura"
-                value={`${aquarium.temperature}°C`}
-                colorClass={colors.text}
-              />
-
-              <ParameterCard
-                icon={<FaFlask />}
-                label="Capacidade"
-                value={`${aquarium.capacity} L`}
-                colorClass={colors.text}
-              />
-
-              <ParameterCard
-                icon={<FaSort />}
-                label="Atualizado em"
-                value={new Date(aquarium.lastUpdated).toLocaleDateString(
-                  "pt-BR"
-                )}
-                colorClass={colors.text}
-              />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {quickNotes.map((note) => (
+            <QuickNoteCard
+              key={note.id}
+              note={note}
+              onDelete={() => onDeleteNote(note.id)}
+            />
+          ))}
+          {quickNotes.length === 0 && (
+            <div className="col-span-3 text-center text-gray-500 py-4">
+              Nenhuma nota adicionada
             </div>
-
-            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-100 rounded-lg flex">
-              <FaInfoCircle className="text-yellow-500 mr-3 mt-1" />
-              <div>
-                <h4 className="font-medium text-yellow-700 mb-1">
-                  Dica de Manutenção
-                </h4>
-                <p className="text-sm text-yellow-600">
-                  Para este tipo de aquário, recomenda-se verificar o pH e
-                  temperatura a cada 2-3 dias e realizar trocas parciais de água
-                  conforme sua programação.
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -926,6 +1246,39 @@ const ParameterCard = ({ icon, label, value, colorClass }) => (
     <div className={`${colorClass} mb-1`}>{icon}</div>
     <div className="text-sm text-gray-500">{label}</div>
     <div className="text-lg font-semibold text-gray-700">{value}</div>
+  </div>
+);
+
+const AlertCard = ({ icon, title, value, description, status = "normal" }) => {
+  const statusColors = {
+    normal: "bg-gray-50 border-gray-200",
+    warning: "bg-yellow-50 border-yellow-200",
+    danger: "bg-red-50 border-red-200",
+  };
+
+  return (
+    <div className={`p-4 rounded-lg border ${statusColors[status]}`}>
+      <div className="flex items-center justify-between mb-2">
+        {icon}
+        <span className="text-sm text-gray-500">{title}</span>
+      </div>
+      <div className="text-lg font-semibold mb-1">{value}</div>
+      <div className="text-sm text-gray-600">{description}</div>
+    </div>
+  );
+};
+
+const QuickNoteCard = ({ note, onDelete }) => (
+  <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+    <div className="flex justify-between items-start mb-2">
+      <span className="text-sm font-medium text-gray-700">
+        {new Date(note.date).toLocaleDateString()}
+      </span>
+      <button onClick={onDelete} className="text-gray-400 hover:text-gray-600">
+        <FaTrash size={12} />
+      </button>
+    </div>
+    <p className="text-sm text-gray-600">{note.content}</p>
   </div>
 );
 
