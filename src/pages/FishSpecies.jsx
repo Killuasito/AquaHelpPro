@@ -444,7 +444,7 @@ const FishSpecies = () => {
 
   return (
     <motion.div
-      className="max-w-7xl mx-auto px-4 py-8 mt-20"
+      className="max-w-7xl mx-auto px-4 py-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
