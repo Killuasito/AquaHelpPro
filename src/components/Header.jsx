@@ -402,7 +402,7 @@ const Header = () => {
             {/* Side Panel Menu */}
             <motion.div
               className={`fixed top-0 right-0 h-full w-80 max-w-full z-50 lg:hidden overflow-y-auto
-                ${scrolled ? "bg-white" : "bg-blue-600"} shadow-2xl`}
+                ${scrolled ? "bg-white" : "bg-blue-700"} shadow-2xl`}
               initial={{ x: "100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "100%", opacity: 0 }}
@@ -417,7 +417,7 @@ const Header = () => {
                   <div className="flex items-center gap-2">
                     <div
                       className={`rounded-full p-2 ${
-                        scrolled ? "bg-blue-100" : "bg-white/10"
+                        scrolled ? "bg-blue-100" : "bg-white/20"
                       }`}
                     >
                       <FaFish
@@ -439,7 +439,7 @@ const Header = () => {
                     className={`p-2 rounded-full ${
                       scrolled
                         ? "text-blue-600 hover:bg-blue-50"
-                        : "text-white hover:bg-white/10"
+                        : "text-white hover:bg-white/20"
                     }`}
                     aria-label="Fechar menu"
                   >
@@ -464,19 +464,21 @@ const Header = () => {
                                   isActive
                                     ? scrolled
                                       ? "bg-blue-50 text-blue-700 font-medium"
-                                      : "bg-white/10 text-white font-medium"
+                                      : "bg-blue-800 text-white font-medium"
                                     : scrolled
                                     ? "text-gray-700 hover:bg-gray-100"
-                                    : "text-white hover:bg-white/10"
+                                    : "text-white hover:bg-blue-800"
                                 }`}
                             >
                               <span
                                 className={`mr-3 text-lg ${
                                   isActive
-                                    ? "text-blue-500"
+                                    ? scrolled
+                                      ? "text-blue-500"
+                                      : "text-blue-300"
                                     : scrolled
                                     ? "text-blue-400"
-                                    : "text-white/80"
+                                    : "text-white"
                                 }`}
                               >
                                 {item.icon}
@@ -522,10 +524,10 @@ const Header = () => {
                                   isActive
                                     ? scrolled
                                       ? "bg-blue-50 text-blue-700"
-                                      : "bg-white/10 text-white"
+                                      : "bg-blue-800 text-white"
                                     : scrolled
                                     ? "text-gray-700 hover:bg-gray-100"
-                                    : "text-white hover:bg-white/10"
+                                    : "text-white hover:bg-blue-800"
                                 }`}
                               aria-expanded={isDropdownOpen}
                             >
@@ -533,10 +535,12 @@ const Header = () => {
                                 <span
                                   className={`mr-3 text-lg ${
                                     isActive
-                                      ? "text-blue-500"
+                                      ? scrolled
+                                        ? "text-blue-500"
+                                        : "text-blue-300"
                                       : scrolled
                                       ? "text-blue-400"
-                                      : "text-white/80"
+                                      : "text-white"
                                   }`}
                                 >
                                   {item.icon}
@@ -546,9 +550,7 @@ const Header = () => {
                               <FaChevronDown
                                 className={`transition-transform duration-300 ${
                                   isDropdownOpen ? "rotate-180" : ""
-                                } ${
-                                  scrolled ? "text-blue-500" : "text-white/80"
-                                }`}
+                                } ${scrolled ? "text-blue-500" : "text-white"}`}
                                 size={14}
                               />
                             </button>
@@ -564,7 +566,7 @@ const Header = () => {
                                 className={`ml-6 pl-2 ${
                                   scrolled
                                     ? "border-l-2 border-blue-100"
-                                    : "border-l border-white/20"
+                                    : "border-l border-blue-600"
                                 } space-y-1`}
                               >
                                 {item.submenu.map((subItem, subIndex) => {
@@ -585,10 +587,10 @@ const Header = () => {
                                             isSubActive
                                               ? scrolled
                                                 ? "bg-blue-50 text-blue-700 font-medium"
-                                                : "bg-white/10 text-white font-medium"
+                                                : "bg-blue-600 text-white font-medium"
                                               : scrolled
                                               ? "text-gray-600 hover:bg-gray-100"
-                                              : "text-white/90 hover:bg-white/10"
+                                              : "text-white/90 hover:bg-blue-600"
                                           }`}
                                       >
                                         <span
@@ -599,7 +601,7 @@ const Header = () => {
                                                 : "text-white"
                                               : scrolled
                                               ? "text-blue-400/70"
-                                              : "text-white/70"
+                                              : "text-blue-300"
                                           }`}
                                         >
                                           {subItem.icon}
@@ -621,7 +623,7 @@ const Header = () => {
                 {/* Bottom Section */}
                 <div
                   className={`mt-6 pt-6 border-t ${
-                    scrolled ? "border-gray-100" : "border-white/10"
+                    scrolled ? "border-gray-100" : "border-blue-600"
                   }`}
                 >
                   <Link
@@ -630,7 +632,7 @@ const Header = () => {
                     className={`flex items-center justify-between w-full px-4 py-3 rounded-lg ${
                       scrolled
                         ? "bg-blue-600 text-white hover:bg-blue-700"
-                        : "bg-white/20 text-white hover:bg-white/30"
+                        : "bg-blue-800 text-white hover:bg-blue-900"
                     } transition-colors`}
                   >
                     <div className="flex items-center">

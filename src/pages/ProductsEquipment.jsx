@@ -340,7 +340,7 @@ const ProductsEquipment = () => {
             {paginatedProducts.map((product) => (
               <motion.div
                 key={product.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100"
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col"
                 whileHover={{ y: -5 }}
               >
                 <div className="relative group">
@@ -361,7 +361,7 @@ const ProductsEquipment = () => {
                   )}
                 </div>
 
-                <div className="p-6 flex flex-col h-[280px]">
+                <div className="p-6 flex flex-col flex-grow">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg font-bold text-gray-800">
                       {product.name}
@@ -384,7 +384,7 @@ const ProductsEquipment = () => {
                     </p>
                   </div>
 
-                  <div className="flex justify-between items-center mb-4 mt-auto pt-4">
+                  <div className="flex justify-between items-center mb-4 mt-auto pt-4 border-t border-gray-100">
                     <span className="text-2xl font-bold text-gray-700">
                       R$ {product.price.toFixed(2)}
                     </span>
