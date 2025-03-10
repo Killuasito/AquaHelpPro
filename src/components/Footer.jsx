@@ -159,7 +159,7 @@ const Footer = () => {
             <p className="text-blue-100 mb-5 leading-relaxed">
               Sua fonte completa de informações sobre aquários, peixes
               ornamentais e manutenção de ambientes aquáticos. Ajudando
-              entusiastas a criarem habitats saudáveis desde 2020.
+              entusiastas a criarem habitats saudáveis desde 2025.
             </p>
             <div className="flex space-x-3 mt-5">
               <SocialIcon icon={<FaFacebook />} ariaLabel="Facebook" />
@@ -182,9 +182,6 @@ const Footer = () => {
               <FooterLink to="/" text="Início" />
               <FooterLink to="/register" text="Registrar Aquário" />
               <FooterLink to="/tips" text="Dicas" />
-              <FooterLink to="/community" text="Comunidade" />
-              <FooterLink to="#" text="Sobre Nós" />
-              <FooterLink to="#" text="Política de Privacidade" />
             </ul>
           </motion.div>
 
@@ -236,7 +233,7 @@ const Footer = () => {
                   href="mailto:contato@aquarismo.com.br"
                   className="hover:text-blue-200 transition-colors"
                 >
-                  contato@aquarismo.com.br
+                  tififerreira@gmail.com
                 </a>
               </li>
               <li className="flex items-start space-x-3 group">
@@ -247,14 +244,14 @@ const Footer = () => {
                   href="tel:+551155551234"
                   className="hover:text-blue-200 transition-colors"
                 >
-                  (11) 5555-1234
+                  (11) 93248-2402
                 </a>
               </li>
               <li className="flex items-start space-x-3 group">
                 <span className="text-blue-200 mt-1 group-hover:text-white transition-colors">
                   <FaMapMarkerAlt />
                 </span>
-                <span>São Paulo, SP - Brasil</span>
+                <span>Vargem Grande Paulista, SP - Brasil</span>
               </li>
             </ul>
 

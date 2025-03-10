@@ -678,9 +678,9 @@ const AquariumCard = ({
             <FaThermometerHalf className={`mr-2 ${colorClasses.text}`} />
             <span>{aquarium.temperature}°C</span>
           </div>
-          <div className="flex items-center">
-            <FaFish className={`mr-2 ${colorClasses.text}`} />
-            <span className="truncate">
+          <div className="flex items-start">
+            <FaFish className={`mr-2 mt-1 ${colorClasses.text}`} />
+            <span className="line-clamp-2">
               {getShortSpeciesList(aquarium.fishSpecies)}
             </span>
           </div>
@@ -1050,28 +1050,33 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 backdrop-blur-sm"
     >
       <motion.div
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
       >
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
-          <h2 className="text-2xl font-bold flex items-center">
-            <FaEdit className="mr-3" /> Editar Aquário
+        {/* Header - Fixed at the top */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sticky top-0 z-10">
+          <h2 className="text-xl sm:text-2xl font-bold flex items-center">
+            <FaEdit className="mr-2" /> Editar Aquário
           </h2>
-          <p className="text-blue-100 mt-1">
+          <p className="text-blue-100 mt-1 text-sm">
             Atualize as informações do seu aquário
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8">
-          <div className="grid gap-8">
+        {/* Scrollable Content */}
+        <div className="overflow-y-auto flex-grow p-4 sm:p-6">
+          <form
+            id="edit-aquarium-form"
+            onSubmit={handleSubmit}
+            className="space-y-6"
+          >
             {/* Nome e Tipo */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 block">
                   Nome do Aquário
@@ -1081,7 +1086,7 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
                   name="aquariumName"
                   value={formData.aquariumName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                   required
                 />
               </div>
@@ -1094,7 +1099,7 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
                   name="aquariumType"
                   value={formData.aquariumType}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 bg-white"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 bg-white"
                   required
                 >
                   <option value="freshwater">Água Doce</option>
@@ -1106,17 +1111,17 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
             </div>
 
             {/* Parâmetros */}
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 block">
-                  Capacidade (litros)
+                  Capacidade (L)
                 </label>
                 <input
                   type="number"
                   name="capacity"
                   value={formData.capacity}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                   required
                 />
               </div>
@@ -1131,12 +1136,12 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
                   value={formData.waterPh}
                   onChange={handleChange}
                   step="0.1"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                   required
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 col-span-2 sm:col-span-1">
                 <label className="text-sm font-medium text-gray-700 block">
                   Temperatura (°C)
                 </label>
@@ -1146,14 +1151,14 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
                   value={formData.temperature}
                   onChange={handleChange}
                   step="0.1"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                   required
                 />
               </div>
             </div>
 
             {/* Textareas */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 block">
                   Espécies de Peixes
@@ -1162,7 +1167,7 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
                   name="fishSpecies"
                   value={formData.fishSpecies}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 h-24 resize-none"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 h-16 sm:h-24 resize-none"
                   placeholder="Liste as espécies de peixes..."
                 />
               </div>
@@ -1175,7 +1180,7 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
                   name="waterChange"
                   value={formData.waterChange}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 h-24 resize-none"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 h-16 sm:h-24 resize-none"
                   placeholder="Descreva sua rotina de manutenção..."
                 />
               </div>
@@ -1188,34 +1193,35 @@ const EditAquariumModal = ({ aquarium, onClose, onSave }) => {
                   name="notes"
                   value={formData.notes}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 h-24 resize-none"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200 h-16 sm:h-24 resize-none"
                   placeholder="Observações adicionais..."
                 />
               </div>
             </div>
-          </div>
+          </form>
+        </div>
 
-          {/* Footer */}
-          <div className="flex justify-end gap-4 mt-8 pt-6 border-t">
-            <motion.button
-              type="button"
-              onClick={onClose}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center"
-            >
-              Cancelar
-            </motion.button>
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 flex items-center"
-            >
-              <FaSave className="mr-2" /> Salvar Alterações
-            </motion.button>
-          </div>
-        </form>
+        {/* Footer - Fixed at the bottom */}
+        <div className="p-4 border-t flex flex-col-reverse sm:flex-row sm:justify-end gap-3 bg-white sticky bottom-0 z-10">
+          <motion.button
+            type="button"
+            onClick={onClose}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-5 py-2 w-full sm:w-auto rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Cancelar
+          </motion.button>
+          <motion.button
+            type="submit"
+            form="edit-aquarium-form"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-5 py-2 w-full sm:w-auto rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors flex justify-center items-center"
+          >
+            <FaSave className="mr-2" /> Salvar
+          </motion.button>
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -1227,7 +1233,7 @@ const DetailSection = ({ icon, title, content }) => (
       <span className="mr-2">{icon}</span>
       <h4 className="font-medium text-gray-700">{title}</h4>
     </div>
-    <p className="text-gray-600 ml-7">{content}</p>
+    <p className="text-gray-600 ml-7 whitespace-pre-line">{content}</p>
   </div>
 );
 
@@ -1243,9 +1249,17 @@ const DetailItem = ({ icon, label, value }) => (
 
 const ParameterCard = ({ icon, label, value, colorClass }) => (
   <div className="bg-gray-50 p-4 rounded-lg">
-    <div className={`${colorClass} mb-1`}>{icon}</div>
-    <div className="text-sm text-gray-500">{label}</div>
-    <div className="text-lg font-semibold text-gray-700">{value}</div>
+    <div
+      className={`${colorClass} mb-1 flex items-center justify-center sm:justify-start`}
+    >
+      {icon}
+    </div>
+    <div className="text-sm text-gray-500 text-center sm:text-left">
+      {label}
+    </div>
+    <div className="text-lg font-semibold text-gray-700 text-center sm:text-left truncate">
+      {value}
+    </div>
   </div>
 );
 
@@ -1310,13 +1324,22 @@ function getLatestUpdateDate(aquariums) {
     const currentDate = new Date(aquarium.lastUpdated);
     return currentDate > latest ? currentDate : latest;
   }, new Date(0));
-  return latestDate.toLocaleDateString("pt-BR");
+
+  // Use a shorter date format for mobile-friendliness
+  const options = { day: "2-digit", month: "2-digit", year: "2-digit" };
+  return latestDate.toLocaleDateString("pt-BR", options);
 }
 
 function getShortSpeciesList(fishSpecies) {
   if (!fishSpecies) return "Nenhuma espécie";
-  const species = fishSpecies.split(",");
-  if (species.length <= 2) return fishSpecies;
+
+  // Properly trim and handle spaces in the species list
+  const species = fishSpecies
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (species.length <= 2) return species.join(", ");
   return `${species[0]}, ${species[1]} e mais ${species.length - 2}`;
 }
 

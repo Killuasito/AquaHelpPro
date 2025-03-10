@@ -1,16 +1,23 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
   FaThermometerHalf,
   FaRuler,
   FaGlobeAmericas,
+  FaTimes,
+  FaFish,
+  FaUtensils,
+  FaClock,
+  FaFlask,
+  FaWater,
 } from "react-icons/fa";
 
 const FishSpecies = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedFish, setSelectedFish] = useState(null);
   const itemsPerPage = 12; // Changed from 24 to 12
 
   const fishData = [
@@ -420,6 +427,295 @@ const FishSpecies = () => {
       description:
         "Peixe muito colorido com ciclo de vida curto. Excelente para nano aquários.",
     },
+    // Novas espécies de água doce
+    {
+      name: "Peixe-Borboleta",
+      scientificName: "Pantodon buchholzi",
+      image:
+        "https://cobasiblog.blob.core.windows.net/production-ofc/2022/12/3-3.png",
+      type: "freshwater",
+      temperament: "Pacífico/Tímido",
+      size: "10-13 cm",
+      pH: "6.0-7.0",
+      temperature: "24-28°C",
+      diet: "Carnívoro (insetos, pequenos peixes)",
+      minTankSize: "100 litros",
+      origin: "África Ocidental",
+      lifespan: "5-8 anos",
+      description:
+        "Possui nadadeiras peitorais semelhantes a asas de borboleta. Capaz de saltar fora d'água para capturar insetos.",
+    },
+    {
+      name: "Acará Bandeira",
+      scientificName: "Pterophyllum scalare",
+      image: "https://www.baseflora.com/img/article/0011-1.jpg",
+      type: "freshwater",
+      temperament: "Semi-agressivo/Cardume",
+      size: "15-20 cm",
+      pH: "6.0-7.5",
+      temperature: "24-30°C",
+      diet: "Onívoro (artemias, flocos)",
+      minTankSize: "150 litros",
+      origin: "América do Sul (Bacia Amazônica)",
+      lifespan: "8-10 anos",
+      description:
+        "Peixe elegante de formato triangular. Prefere aquários altos com plantas e troncos.",
+    },
+    {
+      name: "Barbo Tigre",
+      scientificName: "Puntigrus tetrazona",
+      image:
+        "https://peixecoruna.com/wp-content/uploads/2024/08/Peixe-Barbo-Tigre.png",
+      type: "freshwater",
+      temperament: "Ativo/Cardume",
+      size: "5-7 cm",
+      pH: "6.0-7.5",
+      temperature: "22-26°C",
+      diet: "Onívoro (ração, vegetais)",
+      minTankSize: "80 litros",
+      origin: "Indonésia",
+      lifespan: "5-7 anos",
+      description:
+        "Reconhecível por suas listras pretas. Deve ser mantido em grupos de no mínimo 6 indivíduos.",
+    },
+    {
+      name: "Tetras Sangue",
+      scientificName: "Hyphessobrycon eques",
+      image: "https://gruposarlo.com.br/wp-content/uploads/2022/01/S35736.jpg",
+      type: "freshwater",
+      temperament: "Pacífico/Cardume",
+      size: "3-5 cm",
+      pH: "6.0-7.5",
+      temperature: "22-28°C",
+      diet: "Onívoro (ração, artemias)",
+      minTankSize: "60 litros",
+      origin: "Bacia do Rio Paraná",
+      lifespan: "3-5 anos",
+      description:
+        "Pequeno peixe de coloração vermelha intensa. Ideal para aquários comunitários.",
+    },
+    {
+      name: "Peixe Colisa",
+      scientificName: "Trichogaster lalius",
+      image:
+        "https://cdn.dlojavirtual.com/static1/107424/sku/peixes-de-agua-doce-colisa-azul-3-a-4-cm-p-1716415482406.png",
+      type: "freshwater",
+      temperament: "Pacífico/Tímido",
+      size: "5-8 cm",
+      pH: "6.0-7.5",
+      temperature: "22-28°C",
+      diet: "Onívoro (ração, vegetais)",
+      minTankSize: "60 litros",
+      origin: "Índia, Bangladesh",
+      lifespan: "3-5 anos",
+      description:
+        "Também conhecido como gourami anão, possui cores vibrantes e constrói ninhos de bolhas.",
+    },
+    {
+      name: "Corydora Bronze",
+      scientificName: "Corydoras aeneus",
+      image:
+        "https://images.tcdn.com.br/img/img_prod/648834/corydoras_aeneus_4381_1_86dc7741342d3cfd77cf2a31218b0e7a.jpg",
+      type: "freshwater",
+      temperament: "Pacífico/Cardume",
+      size: "6-7 cm",
+      pH: "6.0-7.5",
+      temperature: "22-26°C",
+      diet: "Onívoro (tabletes de fundo)",
+      minTankSize: "60 litros",
+      origin: "América do Sul",
+      lifespan: "5-8 anos",
+      description:
+        "Peixe de fundo que ajuda a manter o substrato limpo. Deve ser mantido em grupos.",
+    },
+    {
+      name: "Danio Zebra",
+      scientificName: "Danio rerio",
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Zebrafisch.jpg/640px-Zebrafisch.jpg",
+      type: "freshwater",
+      temperament: "Ativo/Cardume",
+      size: "3-5 cm",
+      pH: "6.5-7.5",
+      temperature: "18-24°C",
+      diet: "Onívoro (ração, microorganismos)",
+      minTankSize: "40 litros",
+      origin: "Índia, Bangladesh",
+      lifespan: "3-5 anos",
+      description:
+        "Pequeno peixe listrado muito ativo. Ideal para iniciantes e aquários comunitários.",
+    },
+    {
+      name: "Peixe Arco-Íris",
+      scientificName: "Melanotaenia boesemani",
+      image:
+        "https://cdn.interago.com.br/img/webp/w_0_q_8/5/mc/Novo%20cat%C3%A1logo/Arco%20Iris/arcoirisfundo",
+      type: "freshwater",
+      temperament: "Pacífico/Cardume",
+      size: "10-12 cm",
+      pH: "7.0-8.0",
+      temperature: "24-28°C",
+      diet: "Onívoro (ração, artemias)",
+      minTankSize: "120 litros",
+      origin: "Nova Guiné",
+      lifespan: "5-8 anos",
+      description:
+        "Coloração impressionante que muda com a luz. Precisa de espaço para natação em cardume.",
+    },
+    {
+      name: "Botia Palhaço",
+      scientificName: "Chromobotia macracanthus",
+      image:
+        "https://images.tcdn.com.br/img/img_prod/749804/botia_palhaco_5_a_7_cm_chromobotia_macracanthus_1035_2_2b530771e56c9022d8545185663c543f.jpg",
+      type: "freshwater",
+      temperament: "Pacífico/Cardume",
+      size: "15-30 cm",
+      pH: "6.0-7.5",
+      temperature: "25-30°C",
+      diet: "Onívoro (ração, caramujos)",
+      minTankSize: "250 litros",
+      origin: "Indonésia",
+      lifespan: "10-15 anos",
+      description:
+        "Peixe de fundo com padrão laranja e preto. Excelente controlador de caramujos indesejados.",
+    },
+    // Novas espécies de água salgada
+    {
+      name: "Peixe-Anjo Imperador",
+      scientificName: "Pomacanthus imperator",
+      image:
+        "https://guiadoaquarismo.com.br/wp-content/uploads/2023/06/Peixe-Anjo-imperador-Pomacanthus-imperator.jpg",
+      type: "saltwater",
+      temperament: "Semi-agressivo",
+      size: "30-40 cm",
+      pH: "8.1-8.4",
+      temperature: "24-28°C",
+      diet: "Onívoro (esponjas, algas)",
+      minTankSize: "500 litros",
+      origin: "Indo-Pacífico",
+      lifespan: "10-15 anos",
+      description:
+        "Um dos mais belos peixes marinhos, com listras azuis e amarelas. Juvenis têm coloração diferente dos adultos.",
+    },
+    {
+      name: "Cirurgião Yellow Tang",
+      scientificName: "Zebrasoma flavescens",
+      image:
+        "https://www.aquarismomarinho.com.br/blog/wp-content/uploads/2020/05/yellow-tang-preco.jpg",
+      type: "saltwater",
+      temperament: "Semi-agressivo",
+      size: "15-20 cm",
+      pH: "8.1-8.4",
+      temperature: "24-28°C",
+      diet: "Herbívoro (algas, vegetais marinhos)",
+      minTankSize: "280 litros",
+      origin: "Havaí, Pacífico",
+      lifespan: "8-10 anos",
+      description:
+        "Peixe amarelo vibrante muito popular em aquários marinhos. Excelente controlador de algas.",
+    },
+    {
+      name: "Góbio Mandarim",
+      scientificName: "Synchiropus splendidus",
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/2/2d/Synchiropus_splendidus_2_Luc_Viatour.jpg",
+      type: "saltwater",
+      temperament: "Pacífico",
+      size: "6-8 cm",
+      pH: "8.1-8.4",
+      temperature: "24-26°C",
+      diet: "Carnívoro (copépodes, microcrustáceos)",
+      minTankSize: "150 litros",
+      origin: "Indo-Pacífico",
+      lifespan: "3-5 anos",
+      description:
+        "Um dos peixes mais coloridos do mundo. Requer alimentação especializada e aquário maduro.",
+    },
+    {
+      name: "Peixe-Leão",
+      scientificName: "Pterois volitans",
+      image:
+        "https://static.mundoeducacao.uol.com.br/mundoeducacao/2022/05/peixe-leao.jpg",
+      type: "saltwater",
+      temperament: "Predador/Solitário",
+      size: "30-35 cm",
+      pH: "8.1-8.4",
+      temperature: "23-27°C",
+      diet: "Carnívoro (pequenos peixes, crustáceos)",
+      minTankSize: "400 litros",
+      origin: "Indo-Pacífico",
+      lifespan: "10-15 anos",
+      description:
+        "Peixe exótico com espinhos venenosos. Requer cuidados especiais e não deve ser mantido com peixes pequenos.",
+    },
+    {
+      name: "Chromis Azul",
+      scientificName: "Chromis cyanea",
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Chromis_cyanea_Gratwicke.jpg/1200px-Chromis_cyanea_Gratwicke.jpg",
+      type: "saltwater",
+      temperament: "Pacífico/Cardume",
+      size: "8-10 cm",
+      pH: "8.1-8.4",
+      temperature: "24-27°C",
+      diet: "Onívoro (plâncton, ração marinha)",
+      minTankSize: "150 litros",
+      origin: "Caribe",
+      lifespan: "8-15 anos",
+      description:
+        "Peixe azul elétrico que se dá bem em cardumes. Excelente para iniciantes em aquários marinhos.",
+    },
+    {
+      name: "Peixe-Anjo Flameback",
+      scientificName: "Centropyge acanthops",
+      image:
+        "https://lh5.googleusercontent.com/proxy/zHTdNXbXJgAHrhhUYeZlw8agTqEqa4JTtAJcGpUJP2lKjkAwbfbQzY5A3Xlg-FtUe0AkbPjzXBZzJ8FFbvp1neGn4XhisgpN-J-HEpA8S9TdCyPuYEP-8BpuGZOQh5fw440Le0Ab1S_i-qyLtJVMOU5C3lle",
+      type: "saltwater",
+      temperament: "Semi-agressivo",
+      size: "8-10 cm",
+      pH: "8.1-8.4",
+      temperature: "24-28°C",
+      diet: "Onívoro (algas, pequenos invertebrados)",
+      minTankSize: "180 litros",
+      origin: "Oceano Índico",
+      lifespan: "5-10 anos",
+      description:
+        "Peixe-anjo anão com coloração laranja-avermelhada. Menor e mais adequado para aquários médios que outros peixes-anjo.",
+    },
+    {
+      name: "Camarão Pistola",
+      scientificName: "Alpheus soror",
+      image:
+        "https://i.pinimg.com/474x/73/fc/16/73fc16c9ccca2bed1e8c6e8bb421d504.jpg",
+      type: "saltwater",
+      temperament: "Pacífico/Territorial",
+      size: "3-5 cm",
+      pH: "8.1-8.4",
+      temperature: "24-27°C",
+      diet: "Carnívoro (detritos, pequenos invertebrados)",
+      minTankSize: "100 litros",
+      origin: "Indo-Pacífico",
+      lifespan: "3-5 anos",
+      description:
+        "Capaz de produzir um estalido sonoro com sua garra que atordoa presas. Geralmente forma parceria simbiótica com góbios.",
+    },
+    {
+      name: "Peixe-folha",
+      scientificName: "Chaetodermis penicilligerus",
+      image:
+        "https://www.aquarismopaulista.com/wp-content/uploads/2021/08/Monocirrhus-polyacanthus2.jpg",
+      type: "saltwater",
+      temperament: "Semi-agressivo",
+      size: "20-25 cm",
+      pH: "8.1-8.4",
+      temperature: "24-26°C",
+      diet: "Onívoro (pequenos invertebrados, algas)",
+      minTankSize: "300 litros",
+      origin: "Pacífico Ocidental",
+      lifespan: "5-7 anos",
+      description:
+        "Peixe com projeções dérmicas semelhantes a folhas que garantem camuflagem perfeita entre algas e corais.",
+    },
   ];
 
   const filteredFish = fishData.filter((fish) => {
@@ -455,6 +751,18 @@ const FishSpecies = () => {
     if (newPage === currentPage) return;
     setCurrentPage(newPage);
     scrollToTop();
+  };
+
+  const openFishDetails = (fish) => {
+    setSelectedFish(fish);
+    // Prevent scrolling when modal is open
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeFishDetails = () => {
+    setSelectedFish(null);
+    // Restore scrolling
+    document.body.style.overflow = "auto";
   };
 
   return (
@@ -532,9 +840,10 @@ const FishSpecies = () => {
             {paginatedFish.map((fish, index) => (
               <motion.div
                 key={index}
-                className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200"
+                className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 cursor-pointer"
                 whileHover={{ y: -5 }}
                 transition={{ type: "spring", stiffness: 300 }}
+                onClick={() => openFishDetails(fish)}
               >
                 <div className="h-48 bg-gray-200 overflow-hidden">
                   <img
@@ -600,89 +909,323 @@ const FishSpecies = () => {
             ))}
           </div>
 
-          {/* Pagination Controls */}
+          {/* Improved Pagination Controls */}
           {totalPages > 1 && (
-            <div className="mt-8 flex flex-wrap justify-center gap-2">
-              <button
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
-                className={`px-3 py-1 rounded-lg ${
-                  currentPage === 1
-                    ? "bg-gray-100 text-gray-400"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
-              >
-                1
-              </button>
+            <motion.div
+              className="mt-10 pb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+            >
+              <div className="flex flex-col items-center">
+                <span className="text-sm text-gray-700 mb-3">
+                  Página <span className="font-semibold">{currentPage}</span> de{" "}
+                  <span className="font-semibold">{totalPages}</span> (
+                  {filteredFish.length} espécies)
+                </span>
 
-              {currentPage > 3 && <span className="px-2 py-1">...</span>}
-
-              {Array.from({ length: 3 }, (_, i) => {
-                const pageNum = currentPage + i - 1;
-                if (pageNum > 1 && pageNum < totalPages) {
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-1 rounded-lg ${
-                        pageNum === currentPage
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
+                <div className="flex flex-wrap justify-center gap-2 mb-4">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                      currentPage === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
+                    }`}
+                    aria-label="Página anterior"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      {pageNum}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                    Anterior
+                  </button>
+
+                  <div className="hidden sm:flex space-x-1">
+                    {/* First page */}
+                    {currentPage > 2 && (
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                      >
+                        1
+                      </button>
+                    )}
+
+                    {/* Ellipsis for skipped pages */}
+                    {currentPage > 3 && (
+                      <span className="px-1.5 py-1.5 text-gray-500">...</span>
+                    )}
+
+                    {/* Previous page if not first */}
+                    {currentPage > 1 && (
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                      >
+                        {currentPage - 1}
+                      </button>
+                    )}
+
+                    {/* Current page */}
+                    <button
+                      className="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium"
+                      aria-current="page"
+                    >
+                      {currentPage}
                     </button>
-                  );
-                }
-                return null;
-              })}
 
-              {currentPage < totalPages - 2 && (
-                <span className="px-2 py-1">...</span>
-              )}
+                    {/* Next page if not last */}
+                    {currentPage < totalPages && (
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                      >
+                        {currentPage + 1}
+                      </button>
+                    )}
 
-              {totalPages > 1 && (
-                <button
-                  onClick={() => handlePageChange(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className={`px-3 py-1 rounded-lg ${
-                    currentPage === totalPages
-                      ? "bg-gray-100 text-gray-400"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
-                  }`}
-                >
-                  {totalPages}
-                </button>
-              )}
+                    {/* Ellipsis for skipped pages */}
+                    {currentPage < totalPages - 2 && (
+                      <span className="px-1.5 py-1.5 text-gray-500">...</span>
+                    )}
 
-              <div className="w-full md:w-auto flex justify-center gap-2 mt-2 md:mt-0">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`px-3 py-1 rounded-lg ${
-                    currentPage === 1
-                      ? "bg-gray-100 text-gray-400"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
-                  }`}
-                >
-                  Anterior
-                </button>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className={`px-3 py-1 rounded-lg ${
-                    currentPage === totalPages
-                      ? "bg-gray-100 text-gray-400"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
-                  }`}
-                >
-                  Próxima
-                </button>
+                    {/* Last page */}
+                    {currentPage < totalPages - 1 && (
+                      <button
+                        onClick={() => handlePageChange(totalPages)}
+                        className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                      >
+                        {totalPages}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Mobile pagination with current/total */}
+                  <div className="flex sm:hidden items-center px-3 py-1.5 bg-gray-100 rounded-lg">
+                    <span className="text-gray-600 text-sm font-medium">
+                      {currentPage} / {totalPages}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                      currentPage === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
+                    }`}
+                    aria-label="Próxima página"
+                  >
+                    Próxima
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 ml-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Jump to page for larger screens */}
+                {totalPages > 3 && (
+                  <div className="hidden md:flex items-center gap-2 mt-2">
+                    <span className="text-sm text-gray-600">Ir para:</span>
+                    <select
+                      className="bg-white border border-gray-300 text-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={currentPage}
+                      onChange={(e) => handlePageChange(Number(e.target.value))}
+                      aria-label="Selecionar página"
+                    >
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <option key={page} value={page}>
+                            {page}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  </div>
+                )}
               </div>
-            </div>
+            </motion.div>
           )}
         </>
       )}
+
+      {/* Fish Details Modal */}
+      <AnimatePresence mode="wait">
+        {selectedFish && (
+          <motion.div
+            className="fixed inset-0 backdrop-blur-md z-50 flex items-center justify-center p-4"
+            onClick={closeFishDetails}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.98 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                duration: 0.25,
+              }}
+            >
+              <div className="relative">
+                <div className="h-64 sm:h-80 overflow-hidden">
+                  <img
+                    src={selectedFish.image}
+                    alt={selectedFish.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <button
+                  className="absolute top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full"
+                  onClick={closeFishDetails}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-800">
+                      {selectedFish.name}
+                    </h2>
+                    <p className="text-gray-600 italic">
+                      {selectedFish.scientificName}
+                    </p>
+                  </div>
+                  <span
+                    className={`text-sm px-3 py-1 rounded-full ${
+                      selectedFish.type === "freshwater"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-teal-100 text-teal-700"
+                    }`}
+                  >
+                    {selectedFish.type === "freshwater"
+                      ? "Água Doce"
+                      : "Água Salgada"}
+                  </span>
+                </div>
+
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold mb-2 text-gray-700">
+                    Sobre
+                  </h3>
+                  <p className="text-gray-700">{selectedFish.description}</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-3 text-gray-700">
+                      Características
+                    </h3>
+                    <ul className="space-y-3">
+                      <li className="flex items-center">
+                        <FaRuler className="text-blue-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>Tamanho:</strong> {selectedFish.size}
+                        </span>
+                      </li>
+                      <li className="flex items-center">
+                        <FaThermometerHalf className="text-red-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>Temperatura:</strong>{" "}
+                          {selectedFish.temperature}
+                        </span>
+                      </li>
+                      <li className="flex items-center">
+                        <FaFlask className="text-purple-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>pH:</strong> {selectedFish.pH}
+                        </span>
+                      </li>
+                      <li className="flex items-center">
+                        <FaFish className="text-green-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>Temperamento:</strong>{" "}
+                          {selectedFish.temperament}
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-3 text-gray-700">
+                      Cuidados
+                    </h3>
+                    <ul className="space-y-3">
+                      <li className="flex items-center">
+                        <FaUtensils className="text-orange-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>Dieta:</strong> {selectedFish.diet}
+                        </span>
+                      </li>
+                      <li className="flex items-center">
+                        <FaWater className="text-blue-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>Aquário mínimo:</strong>{" "}
+                          {selectedFish.minTankSize}
+                        </span>
+                      </li>
+                      <li className="flex items-center">
+                        <FaClock className="text-gray-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>Expectativa de vida:</strong>{" "}
+                          {selectedFish.lifespan}
+                        </span>
+                      </li>
+                      <li className="flex items-center">
+                        <FaGlobeAmericas className="text-green-500 mr-3 min-w-5" />
+                        <span>
+                          <strong>Origem:</strong> {selectedFish.origin}
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="text-center pt-4 border-t border-gray-200">
+                  <button
+                    onClick={closeFishDetails}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Fechar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
