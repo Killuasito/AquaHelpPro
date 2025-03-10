@@ -21,6 +21,18 @@ import FishSpecies from "./pages/FishSpecies";
 import ParameterCalculator from "./pages/ParameterCalculator";
 import MaintenanceCalendar from "./pages/MaintenanceCalendar";
 import PlantSpecies from "./pages/PlantSpecies";
+import CartPage from "./pages/CartPage";
+
+// Import CartProvider
+import { CartProvider } from "./contexts/CartContext";
+
+// Import new product pages
+import ProductsFish from "./pages/ProductsFish";
+import ProductsPlants from "./pages/ProductsPlants";
+import ProductsEquipment from "./pages/ProductsEquipment";
+
+// Import CheckoutPage
+import CheckoutPage from './pages/CheckoutPage';
 
 // Create a component to wrap Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -101,6 +113,46 @@ function AnimatedRoutes() {
             </PageTransition>
           }
         />
+        <Route
+          path="/cart"
+          element={
+            <PageTransition>
+              <CartPage />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/products/fish"
+          element={
+            <PageTransition>
+              <ProductsFish />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/products/plants"
+          element={
+            <PageTransition>
+              <ProductsPlants />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/products/equipment"
+          element={
+            <PageTransition>
+              <ProductsEquipment />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <PageTransition>
+              <CheckoutPage />
+            </PageTransition>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -109,14 +161,16 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen pt-24">
-        <Header />
-        <ScrollToTop />
-        <main className="flex-grow">
-          <AnimatedRoutes />
-        </main>
-        <Footer />
-      </div>
+      <CartProvider>
+        <div className="flex flex-col min-h-screen pt-24">
+          <Header />
+          <ScrollToTop />
+          <main className="flex-grow">
+            <AnimatedRoutes />
+          </main>
+          <Footer />
+        </div>
+      </CartProvider>
     </Router>
   );
 }

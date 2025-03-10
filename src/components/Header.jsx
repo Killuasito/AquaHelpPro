@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,20 +14,50 @@ import {
   FaCalendarAlt,
   FaBookOpen,
   FaLeaf,
+  FaShoppingCart,
+  FaStore,
+  FaBox,
 } from "react-icons/fa";
+import { CartContext } from "../contexts/CartContext";
 
 const Header = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
+  const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const location = useLocation();
+  const { cartItems } = useContext(CartContext);
 
-  // Updated navItems to include a dropdown for resources
+  // Updated navItems to include products dropdown
   const navItems = [
     { path: "/", text: "Início", icon: <FaHome /> },
     { path: "/register", text: "Registrar Aquário", icon: <FaClipboardList /> },
     { path: "/my-aquariums", text: "Meus Aquários", icon: <FaList /> },
+    {
+      text: "Produtos",
+      icon: <FaStore />,
+      hasDropdown: true,
+      submenu: [
+        {
+          path: "/products/fish",
+          text: "Peixes",
+          icon: <FaFish />,
+        },
+        {
+          path: "/products/plants",
+          text: "Plantas",
+          icon: <FaLeaf />,
+        },
+        {
+          path: "/products/equipment",
+          text: "Equipamentos",
+          icon: <FaBox />,
+        },
+      ],
+    },
     {
       text: "Recursos",
       icon: <FaFish />,
@@ -84,6 +114,91 @@ const Header = () => {
     return false;
   };
 
+  const handleDropdownHover = (dropdownType, index) => {
+    setHoveredItem(index);
+    if (dropdownType === "resources") {
+      setResourcesOpen(true);
+      setProductsOpen(false);
+    } else if (dropdownType === "products") {
+      setProductsOpen(true);
+      setResourcesOpen(false);
+    }
+  };
+
+  // Modificar o renderização do dropdown no desktop
+  const renderDropdown = (item, index, type) => (
+    <div className="relative">
+      <button
+        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+          isPathActive(item)
+            ? scrolled
+              ? "bg-blue-100 text-blue-800"
+              : "bg-white/20 text-white"
+            : scrolled
+            ? "hover:bg-blue-50 text-blue-700"
+            : "hover:bg-white/10 text-white"
+        }`}
+        onMouseEnter={() => handleDropdownHover(type, index)}
+        onMouseLeave={() => {
+          if (type === "resources") setResourcesOpen(false);
+          if (type === "products") setProductsOpen(false);
+        }}
+        onClick={() => {
+          if (type === "resources") setResourcesOpen(!resourcesOpen);
+          if (type === "products") setProductsOpen(!productsOpen);
+        }}
+      >
+        <span className="text-lg">{item.icon}</span>
+        <span className="font-medium">{item.text}</span>
+        <FaChevronDown className="ml-1 text-xs opacity-70" />
+      </button>
+
+      <AnimatePresence>
+        {((type === "resources" && resourcesOpen) ||
+          (type === "products" && productsOpen)) && (
+          <motion.div
+            className={`absolute top-full left-0 mt-1 w-64 rounded-md shadow-lg overflow-hidden z-20 ${
+              scrolled ? "bg-white" : "bg-blue-700"
+            }`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            onMouseEnter={() => {
+              if (type === "resources") setResourcesOpen(true);
+              if (type === "products") setProductsOpen(true);
+            }}
+            onMouseLeave={() => {
+              if (type === "resources") setResourcesOpen(false);
+              if (type === "products") setProductsOpen(false);
+            }}
+          >
+            <div className="py-1">
+              {item.submenu.map((subItem, subIndex) => (
+                <Link
+                  key={subIndex}
+                  to={subItem.path}
+                  className={`block px-4 py-2 ${
+                    location.pathname === subItem.path
+                      ? scrolled
+                        ? "bg-blue-50 text-blue-700"
+                        : "bg-blue-600 text-white"
+                      : scrolled
+                      ? "text-gray-700 hover:bg-blue-50"
+                      : "text-white hover:bg-blue-600"
+                  } flex items-center space-x-2`}
+                >
+                  <span className="text-sm">{subItem.icon}</span>
+                  <span>{subItem.text}</span>
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
   return (
     <motion.header
       className={`fixed w-full top-0 z-50 transition-all duration-300 ${
@@ -96,6 +211,7 @@ const Header = () => {
       transition={{ duration: 0.5 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+        {/* Logo section */}
         <Link to="/">
           <motion.div
             className="flex items-center space-x-2 group"
@@ -163,70 +279,11 @@ const Header = () => {
                       <span className="text-lg">{item.icon}</span>
                       <span className="font-medium">{item.text}</span>
                     </Link>
-                  ) : (
-                    <div className="relative">
-                      <button
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                          isActive
-                            ? scrolled
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-white/20 text-white"
-                            : scrolled
-                            ? "hover:bg-blue-50 text-blue-700"
-                            : "hover:bg-white/10 text-white"
-                        }`}
-                        onMouseEnter={() => {
-                          setHoveredItem(index);
-                          setResourcesOpen(true);
-                        }}
-                        onClick={() => setResourcesOpen(!resourcesOpen)}
-                      >
-                        <span className="text-lg">{item.icon}</span>
-                        <span className="font-medium">{item.text}</span>
-                        <FaChevronDown className="ml-1 text-xs opacity-70" />
-                      </button>
-
-                      {/* Dropdown Menu */}
-                      <AnimatePresence>
-                        {resourcesOpen && (
-                          <motion.div
-                            className={`absolute top-full left-0 mt-1 w-64 rounded-md shadow-lg overflow-hidden z-20 ${
-                              scrolled ? "bg-white" : "bg-blue-700"
-                            }`}
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
-                            onMouseEnter={() => setResourcesOpen(true)}
-                            onMouseLeave={() => setResourcesOpen(false)}
-                          >
-                            <div className="py-1">
-                              {item.submenu.map((subItem, subIndex) => (
-                                <Link
-                                  key={subIndex}
-                                  to={subItem.path}
-                                  className={`block px-4 py-2 ${
-                                    location.pathname === subItem.path
-                                      ? scrolled
-                                        ? "bg-blue-50 text-blue-700"
-                                        : "bg-blue-600 text-white"
-                                      : scrolled
-                                      ? "text-gray-700 hover:bg-blue-50"
-                                      : "text-white hover:bg-blue-600"
-                                  } flex items-center space-x-2`}
-                                >
-                                  <span className="text-sm">
-                                    {subItem.icon}
-                                  </span>
-                                  <span>{subItem.text}</span>
-                                </Link>
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )}
+                  ) : item.text === "Recursos" ? (
+                    renderDropdown(item, index, "resources")
+                  ) : item.text === "Produtos" ? (
+                    renderDropdown(item, index, "products")
+                  ) : null}
 
                   {isActive && (
                     <motion.div
@@ -245,8 +302,9 @@ const Header = () => {
           </ul>
         </nav>
 
-        {/* Mobile Menu Button */}
-        <div className="lg:hidden">
+        {/* Mobile Controls - Modificado */}
+        <div className="flex items-center gap-4 lg:hidden">
+          {/* Mobile Menu Button */}
           <motion.button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             whileTap={{ scale: 0.9 }}
@@ -259,6 +317,28 @@ const Header = () => {
           >
             {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </motion.button>
+
+          {/* Cart Icon */}
+          <Link to="/cart" className="relative p-2 hover:text-blue-600">
+            <FaShoppingCart className="text-2xl" />
+            {cartItems.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                {cartItems.length}
+              </span>
+            )}
+          </Link>
+        </div>
+
+        {/* Desktop Cart Icon */}
+        <div className="hidden lg:flex items-center">
+          <Link to="/cart" className="relative p-2 hover:text-blue-600">
+            <FaShoppingCart className="text-2xl" />
+            {cartItems.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                {cartItems.length}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
 
@@ -281,35 +361,40 @@ const Header = () => {
                 {navItems.map((item, index) => {
                   const isActive = isPathActive(item);
 
-                  return item.path ? (
-                    <motion.li
-                      key={index}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      className={`py-1 ${index === 0 ? "pt-2" : ""}`}
-                    >
-                      <Link
-                        to={item.path}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
-                          isActive
-                            ? scrolled
-                              ? "bg-blue-50 text-blue-800"
-                              : "bg-white/10 text-white"
-                            : ""
-                        } ${
-                          scrolled
-                            ? "text-blue-700 hover:bg-blue-50"
-                            : "text-white hover:bg-white/10"
-                        }`}
+                  if (item.path) {
+                    return (
+                      <motion.li
+                        key={index}
+                        initial={{ x: -20, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                        className={`py-1 ${index === 0 ? "pt-2" : ""}`}
                       >
-                        <span className="text-xl bg-opacity-20 rounded-full p-2 bg-white/10">
-                          {item.icon}
-                        </span>
-                        <span className="font-medium">{item.text}</span>
-                      </Link>
-                    </motion.li>
-                  ) : (
+                        <Link
+                          to={item.path}
+                          className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                            isActive
+                              ? scrolled
+                                ? "bg-blue-50 text-blue-800"
+                                : "bg-white/10 text-white"
+                              : ""
+                          } ${
+                            scrolled
+                              ? "text-blue-700 hover:bg-blue-50"
+                              : "text-white hover:bg-white/10"
+                          }`}
+                        >
+                          <span className="text-xl bg-opacity-20 rounded-full p-2 bg-white/10">
+                            {item.icon}
+                          </span>
+                          <span className="font-medium">{item.text}</span>
+                        </Link>
+                      </motion.li>
+                    );
+                  }
+
+                  // Dropdown items (Produtos e Recursos)
+                  return (
                     <React.Fragment key={index}>
                       <motion.li
                         initial={{ x: -20, opacity: 0 }}
@@ -318,7 +403,15 @@ const Header = () => {
                         className="py-1"
                       >
                         <button
-                          onClick={() => setResourcesOpen(!resourcesOpen)}
+                          onClick={() => {
+                            if (item.text === "Produtos") {
+                              setMobileProductsOpen(!mobileProductsOpen);
+                              setMobileResourcesOpen(false);
+                            } else if (item.text === "Recursos") {
+                              setMobileResourcesOpen(!mobileResourcesOpen);
+                              setMobileProductsOpen(false);
+                            }
+                          }}
                           className={`flex items-center justify-between w-full space-x-3 px-4 py-3 rounded-lg ${
                             isActive
                               ? scrolled
@@ -339,7 +432,11 @@ const Header = () => {
                           </div>
                           <FaChevronDown
                             className={`transition-transform ${
-                              resourcesOpen ? "rotate-180" : ""
+                              (item.text === "Produtos" &&
+                                mobileProductsOpen) ||
+                              (item.text === "Recursos" && mobileResourcesOpen)
+                                ? "rotate-180"
+                                : ""
                             }`}
                           />
                         </button>
@@ -347,7 +444,9 @@ const Header = () => {
 
                       {/* Submenu items */}
                       <AnimatePresence>
-                        {resourcesOpen && (
+                        {((item.text === "Produtos" && mobileProductsOpen) ||
+                          (item.text === "Recursos" &&
+                            mobileResourcesOpen)) && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
@@ -379,7 +478,14 @@ const Header = () => {
                                       ? "text-blue-700 hover:bg-blue-50"
                                       : "text-white hover:bg-white/10"
                                   }`}
-                                  onClick={() => setResourcesOpen(false)}
+                                  onClick={() => {
+                                    if (item.text === "Produtos") {
+                                      setMobileProductsOpen(false);
+                                    } else {
+                                      setMobileResourcesOpen(false);
+                                    }
+                                    setMobileMenuOpen(false);
+                                  }}
                                 >
                                   <span className="text-xl bg-opacity-20 rounded-full p-1 bg-white/10">
                                     {subItem.icon}

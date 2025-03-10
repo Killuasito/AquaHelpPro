@@ -75,11 +75,11 @@ export const useAquariumUpdates = (aquarium) => {
           date: new Date().toISOString(),
           priority: "urgent",
         });
-      } else if (daysSinceUpdate === 6) {
-        const message = `${aquarium.aquariumName}: Troca de água necessária em breve`;
-        sendNotification("Lembrete de Manutenção", {
+        sendNotification("Manutenção Necessária", {
           body: message,
-          tag: `water-reminder-${aquarium.id}`,
+          tag: `water-${aquarium.id}`,
+          requireInteraction: true,
+          url: `/aquarium/${aquarium.id}/maintenance`,
           requireInteraction: false,
         });
         newUpdates.unshift({
