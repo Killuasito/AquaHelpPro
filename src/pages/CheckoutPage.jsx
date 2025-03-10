@@ -234,7 +234,7 @@ const CheckoutPage = () => {
           </div>
           <div className="flex-1"></div>
           <div
-            className={`w-12 text-center ${
+            className={`w-8 text-center ${
               step === 2 ? "font-semibold text-blue-800" : "text-gray-500"
             }`}
           >
@@ -242,7 +242,7 @@ const CheckoutPage = () => {
           </div>
           <div className="flex-1"></div>
           <div
-            className={`w-12 text-center ${
+            className={`w-16 text-center ${
               step === 3 ? "font-semibold text-blue-800" : "text-gray-500"
             }`}
           >
@@ -259,11 +259,11 @@ const CheckoutPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6"
+            className="bg-white rounded-xl shadow-lg p-4 sm:p-6"
           >
             {step === 1 && (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-3">
                   <FaUser className="text-blue-500" />
                   Dados Pessoais
                 </h2>
@@ -306,7 +306,7 @@ const CheckoutPage = () => {
 
             {step === 2 && (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center gap-3">
                   <FaMapMarkerAlt className="text-blue-500" />
                   Endereço de Entrega
                 </h2>
@@ -381,9 +381,9 @@ const CheckoutPage = () => {
 
             {step === 3 && (
               <form onSubmit={handleSubmit} className="space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex flex-wrap items-center gap-2 sm:gap-3">
                   <FaCreditCard className="text-blue-500" />
-                  Forma de Pagamento
+                  <span className="break-words">Forma de Pagamento</span>
                 </h2>
 
                 {/* Payment status message */}
