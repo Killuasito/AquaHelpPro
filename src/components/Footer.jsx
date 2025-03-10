@@ -159,7 +159,7 @@ const Footer = () => {
             <p className="text-blue-100 mb-5 leading-relaxed">
               Sua fonte completa de informações sobre aquários, peixes
               ornamentais e manutenção de ambientes aquáticos. Ajudando
-              entusiastas a criarem habitats saudáveis desde 2025.
+              entusiastas a criarem habitats saudáveis desde 2024.
             </p>
             <div className="flex space-x-3 mt-5">
               <SocialIcon icon={<FaFacebook />} ariaLabel="Facebook" />

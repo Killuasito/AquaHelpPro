@@ -270,7 +270,7 @@ const ParameterCalculator = () => {
   };
 
   return (
-    <motion.div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 px-4 py-8">
+    <motion.div className="min-h-screen bg-gradient-to-br px-4 py-8">
       <div className="text-center mb-10">
         <motion.h1
           className="text-4xl font-bold text-blue-600 mb-4"

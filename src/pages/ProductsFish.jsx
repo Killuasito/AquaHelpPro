@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartContext } from "../contexts/CartContext";
 import {
@@ -21,6 +21,7 @@ const ProductsFish = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState("featured");
   const itemsPerPage = 12;
   const { addToCart } = useContext(CartContext);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -56,8 +57,667 @@ const ProductsFish = () => {
         "Expectativa de vida: 2-3 anos",
       ],
     },
+    {
+      id: 2,
+      name: "Guppy",
+      scientificName: "Poecilia reticulata",
+      type: "freshwater",
+      price: 12.9,
+      image:
+        "https://www.solaqua.net/WebRoot/Store/Shops/3311-141118/5B7E/DEE3/C3BB/6E96/8538/25E6/6498/D8D1/guppy.jpg",
+      description: "Pequeno, vibrante e fácil de cuidar. Reproduz rapidamente.",
+      stock: 25,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "3-4 cm" },
+        { name: "Temperatura", value: "22-28°C" },
+        { name: "pH", value: "7.0-8.0" },
+      ],
+      additionalInfo: [
+        "Ideal para aquários comunitários",
+        "Reprodução fácil e frequente",
+        "Alimentação: flocos, ração granulada",
+        "Expectativa de vida: 1-2 anos",
+      ],
+      isNew: true,
+    },
+    {
+      id: 3,
+      name: "Tetra Neon",
+      scientificName: "Paracheirodon innesi",
+      type: "freshwater",
+      price: 4.2,
+      image:
+        "https://images.tcdn.com.br/img/img_prod/648834/tetra_neon_verdadeiro_paracheirodon_innesi_4373_1_a875d85d71c43eee55728f28f40b2177.jpg",
+      description: "Peixe pequeno com cores brilhantes azul e vermelho.",
+      stock: 40,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "2-3 cm" },
+        { name: "Temperatura", value: "23-26°C" },
+        { name: "pH", value: "6.0-7.0" },
+      ],
+      additionalInfo: [
+        "Ideal manter em cardumes de 6 ou mais",
+        "Preferem aquários plantados com áreas sombreadas",
+        "Alimentação: ração em flocos, alimentos vivos pequenos",
+        "Expectativa de vida: 3-5 anos",
+      ],
+    },
+    {
+      id: 4,
+      name: "Molinésia",
+      scientificName: "Poecilia sphenops",
+      type: "freshwater",
+      price: 14.5,
+      image:
+        "https://aquastuchi.com.br/wp-content/uploads/2024/07/Molly-Gold-Black-Lyratail-1.jpg",
+      description:
+        "Peixe resistente disponível em várias cores. Fácil de cuidar e reproduz rapidamente.",
+      stock: 18,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "6-10 cm" },
+        { name: "Temperatura", value: "24-28°C" },
+        { name: "pH", value: "7.5-8.5" },
+      ],
+      additionalInfo: [
+        "Tolera água ligeiramente salobra",
+        "Compatível com vários tipos de peixes pacíficos",
+        "Alimentação: onívoro, aceita ração em flocos, vegetais",
+        "Expectativa de vida: 3-5 anos",
+      ],
+    },
+    {
+      id: 5,
+      name: "Corydoras",
+      scientificName: "Corydoras spp.",
+      type: "freshwater",
+      price: 18.5,
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/0/00/Corydoras_melanotaenia.JPG",
+      description:
+        "Peixe de fundo pacífico, útil para limpeza e com aparência simpática.",
+      stock: 15,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "4-7 cm" },
+        { name: "Temperatura", value: "22-26°C" },
+        { name: "pH", value: "6.0-7.5" },
+      ],
+      additionalInfo: [
+        "Manter em grupos de 5 ou mais",
+        "Substrato fino para não danificar seus barbilhões",
+        "Alimentação: tablets para fundo, artêmias, larvas",
+        "Expectativa de vida: 5-8 anos",
+      ],
+    },
+    {
+      id: 6,
+      name: "Platy",
+      scientificName: "Xiphophorus maculatus",
+      type: "freshwater",
+      price: 12.9,
+      image:
+        "https://cobasiblog.blob.core.windows.net/production-ofc/2021/05/fish-4718919_1920.png",
+      description:
+        "Peixe colorido fácil de cuidar, ideal para aquaristas iniciantes.",
+      stock: 22,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "4-5 cm" },
+        { name: "Temperatura", value: "22-28°C" },
+        { name: "pH", value: "7.0-8.2" },
+      ],
+      additionalInfo: [
+        "Variedade de cores e padrões",
+        "Compatível com outros peixes pacíficos",
+        "Alimentação: onívoro, aceita diversos tipos de ração",
+        "Expectativa de vida: 2-3 anos",
+      ],
+    },
+    {
+      id: 7,
+      name: "Peixe Dourado",
+      scientificName: "Carassius auratus",
+      type: "freshwater",
+      price: 29.9,
+      image:
+        "https://s2-globorural.glbimg.com/vLWTg3hQFTaUpJHci7As3jeXTtk=/0x0:5616x3744/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_afe5c125c3bb42f0b5ae633b58923923/internal_photos/bs/2024/q/b/SyhKYbQsmOHCrMAjR0lQ/gettyimages-185331043.jpg",
+      description: "Peixe ornamental clássico, existem diversas variedades.",
+      stock: 8,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "10-20 cm" },
+        { name: "Temperatura", value: "18-24°C" },
+        { name: "pH", value: "7.0-7.5" },
+      ],
+      additionalInfo: [
+        "Precisa de aquário grande (mínimo 60L por peixe)",
+        "Produz muito resíduo, necessita de filtragem eficiente",
+        "Alimentação: ração específica para kinguios",
+        "Expectativa de vida: 10-15 anos",
+      ],
+      isNew: true,
+    },
+    {
+      id: 9,
+      name: "Danio Zebra",
+      scientificName: "Danio rerio",
+      type: "freshwater",
+      price: 8.9,
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3sxo1Un6pLBmYcvDAxG8RLMArwqLo5YiesDFp8dpha6uZ9pQP0gQMvLyCVmCW9QXKbOd-g3VXJNHM94wbwGlNiQ",
+      description:
+        "Peixe ativo com padrões de listras que lembram uma zebra, ideal para iniciantes.",
+      stock: 30,
+      category: "peixes",
+      temperament: "Pacífico/Ativo",
+      specifications: [
+        { name: "Tamanho", value: "3-5 cm" },
+        { name: "Temperatura", value: "18-25°C" },
+        { name: "pH", value: "6.5-7.5" },
+      ],
+      additionalInfo: [
+        "Prefere viver em cardumes de 6 ou mais exemplares",
+        "Excelente peixe para ciclagem inicial de aquários",
+        "Muito ativo, precisa de espaço para nadar",
+        "Expectativa de vida: 2-5 anos",
+      ],
+    },
+    {
+      id: 11,
+      name: "Killifish",
+      scientificName: "Nothobranchius spp.",
+      type: "freshwater",
+      price: 39.9,
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCOTWVIuv7xzmYqyP483PZm5JovgqOvVHVdg&s",
+      description:
+        "Peixe com cores vibrantes, perfeito para aquários específicos de espécie.",
+      stock: 8,
+      category: "peixes",
+      temperament: "Variável",
+      specifications: [
+        { name: "Tamanho", value: "4-6 cm" },
+        { name: "Temperatura", value: "22-26°C" },
+        { name: "pH", value: "6.0-7.0" },
+      ],
+      additionalInfo: [
+        "Ciclo de vida curto (6 meses a 2 anos)",
+        "Exige aquários bem plantados com áreas sombreadas",
+        "Algumas espécies podem requerer alimentação viva",
+        "Grande diversidade de cores e padrões",
+      ],
+    },
+    {
+      id: 12,
+      name: "Discus",
+      scientificName: "Symphysodon spp.",
+      type: "freshwater",
+      price: 89.9,
+      image:
+        "https://www.georgiaaquarium.org/wp-content/uploads/2018/09/discus-3.jpg",
+      description:
+        "Conhecido como o rei dos aquários, com cores e padrões deslumbrantes.",
+      stock: 6,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "15-20 cm" },
+        { name: "Temperatura", value: "28-31°C" },
+        { name: "pH", value: "5.5-6.5" },
+      ],
+      additionalInfo: [
+        "Requer água mole e ácida",
+        "Exigente quanto à qualidade da água",
+        "Alimentação variada incluindo artêmia e alimentos vivos",
+        "Expectativa de vida: 10-15 anos",
+      ],
+      isNew: true,
+    },
+    {
+      id: 13,
+      name: "Botia Palhaço",
+      scientificName: "Chromobotia macracanthus",
+      type: "freshwater",
+      price: 69.9,
+      image:
+        "https://images.tcdn.com.br/img/img_prod/749804/botia_palhaco_5_a_7_cm_chromobotia_macracanthus_1035_1_0053208677157f9d7630a8a7ba2ce3a2.jpg",
+      description:
+        "Peixe de fundo colorido e ativo, excelente para controle de caramujos.",
+      stock: 10,
+      category: "peixes",
+      temperament: "Pacífico/Ativo",
+      specifications: [
+        { name: "Tamanho", value: "15-30 cm" },
+        { name: "Temperatura", value: "25-30°C" },
+        { name: "pH", value: "6.0-7.5" },
+      ],
+      additionalInfo: [
+        "Manter em grupos de pelo menos 5 exemplares",
+        "Requer esconderijos e plantas na decoração",
+        "Alimentação: ração em tablete, artêmias, larvas",
+        "Expectativa de vida: 10-15 anos",
+      ],
+    },
+    {
+      id: 14,
+      name: "Tetra Borboleta",
+      scientificName: "Carnegiella strigata",
+      type: "freshwater",
+      price: 29.9,
+      image:
+        "https://cobasiblog.blob.core.windows.net/production-ofc/2022/12/3-3.png",
+      description:
+        "Pequeno peixe com formato de machado, nada na superfície da água.",
+      stock: 12,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "3-4 cm" },
+        { name: "Temperatura", value: "24-28°C" },
+        { name: "pH", value: "5.5-7.0" },
+      ],
+      additionalInfo: [
+        "Peixe saltador - requer tampa no aquário",
+        "Manter em cardumes de 6 ou mais exemplares",
+        "Alimentação: ração em flocos, insetos pequenos",
+        "Expectativa de vida: 3-5 anos",
+      ],
+      isNew: true,
+    },
+    {
+      id: 15,
+      name: "Oscar",
+      scientificName: "Astronotus ocellatus",
+      type: "freshwater",
+      price: 59.9,
+      image:
+        "https://img.freepik.com/fotos-premium/peixe-oscar-astronotus-ocellatus-peixes-de-agua-doce-tropicais-no-aquario-oscar-tigre-ciclideo-de-veludo-peixes-da-familia-dos-ciclideos-na-tropical-america-do-sul-os-ciclideos-mais-populares-no-hobby-de-aquarios_85672-2130.jpg",
+      description: "Peixe ciclidídeo grande e inteligente, reconhece seu dono.",
+      stock: 6,
+      category: "peixes",
+      temperament: "Territorial",
+      specifications: [
+        { name: "Tamanho", value: "25-35 cm" },
+        { name: "Temperatura", value: "23-28°C" },
+        { name: "pH", value: "6.0-7.5" },
+      ],
+      additionalInfo: [
+        "Requer aquário de no mínimo 200 litros",
+        "Mexe no substrato e decoração do aquário",
+        "Alimentação: ração para ciclídeos, alimentação viva",
+        "Expectativa de vida: 10-15 anos",
+      ],
+    },
+    {
+      id: 17,
+      name: "Cascudo Ancistrus",
+      scientificName: "Ancistrus cirrhosus",
+      type: "freshwater",
+      price: 22.9,
+      image:
+        "https://images.tcdn.com.br/img/img_prod/749804/cascudo_ancistrus_spotted_veu_l144_1049_1_2ab13adb67aaf2fde97fed3edb27494d.jpg",
+      description:
+        "Peixe de fundo que ajuda no controle de algas, excelente para limpeza.",
+      stock: 15,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "10-15 cm" },
+        { name: "Temperatura", value: "22-26°C" },
+        { name: "pH", value: "6.5-7.5" },
+      ],
+      additionalInfo: [
+        "Possui ventosas na boca para raspar algas",
+        "Precisa de troncos e raízes no aquário",
+        "Alimentação: tablets para fundo, vegetais, algas",
+        "Expectativa de vida: 5-12 anos",
+      ],
+    },
+    {
+      id: 18,
+      name: "Colisa Lália",
+      scientificName: "Trichogaster lalius",
+      type: "freshwater",
+      price: 24.9,
+      image:
+        "https://cdn.interago.com.br/img/webp/w_0_q_8/5/mc/Novo%20cat%C3%A1logo/Colisa%20Lalia/ColisaFundo",
+      description:
+        "Pequeno peixe labirinto com cores vibrantes, alternativa ao Betta.",
+      stock: 15,
+      category: "peixes",
+      temperament: "Semi-agressivo",
+      specifications: [
+        { name: "Tamanho", value: "5-7 cm" },
+        { name: "Temperatura", value: "22-28°C" },
+        { name: "pH", value: "6.0-7.5" },
+      ],
+      additionalInfo: [
+        "Peixe labirinto que respira ar atmosférico",
+        "Constrói ninhos de bolhas para reprodução",
+        "Alimentação: ração em flocos, alimentos vivos pequenos",
+        "Expectativa de vida: 3-5 anos",
+      ],
+    },
+    {
+      id: 19,
+      name: "Tetra Diamante",
+      scientificName: "Moenkhausia pittieri",
+      type: "freshwater",
+      price: 9.9,
+      image:
+        "https://www.aquarismopaulista.com/wp-content/uploads/2018/09/Moenkhausia-pittieri.jpg",
+      description:
+        "Peixe de cardume com escamas prateadas reluzentes e nadadeiras avermelhadas.",
+      stock: 25,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "5-6 cm" },
+        { name: "Temperatura", value: "23-28°C" },
+        { name: "pH", value: "6.0-7.5" },
+      ],
+      additionalInfo: [
+        "Ideal para aquários comunitários",
+        "Manter em grupos de 6 ou mais exemplares",
+        "Alimentação: ração em flocos, alimentos vivos pequenos",
+        "Expectativa de vida: 3-5 anos",
+      ],
+    },
+    {
+      id: 20,
+      name: "Acará Bandeira",
+      scientificName: "Pterophyllum altum",
+      type: "freshwater",
+      price: 69.9,
+      image: "https://www.baseflora.com/img/article/0011-1.jpg",
+      description:
+        "Peixe anjo de grande porte da Amazônia, mais raro que o escalare comum.",
+      stock: 4,
+      category: "peixes",
+      temperament: "Semi-agressivo",
+      specifications: [
+        { name: "Tamanho", value: "20-30 cm" },
+        { name: "Temperatura", value: "26-30°C" },
+        { name: "pH", value: "5.0-6.5" },
+      ],
+      additionalInfo: [
+        "Necessita de aquário alto e espaçoso",
+        "Prefere água mole e ácida",
+        "Alimentação variada: ração em flocos, artêmias, larvas",
+        "Expectativa de vida: 10-15 anos",
+      ],
+      isNew: true,
+    },
+    {
+      id: 21,
+      name: "Camarão Red Cherry",
+      scientificName: "Neocaridina davidi",
+      type: "freshwater",
+      price: 14.9,
+      image:
+        "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgco69Y7nLtM8cdQHOV35XmOuDMQBZst1C4EMOWmUAGfifVEjgnODULX0rWksbNFraclB5ff-ReNWTf4aPgntAMG8DkGKgNP0H0Guf8RKAaBmnpfL6zSc2p87m628g3Qdi3lEmZPzheReY/s1600/Neocaridina_heteropodavarred.jpg",
+      description:
+        "Camarão pequeno com coloração vermelha intensa, excelente para aquários plantados.",
+      stock: 30,
+      category: "invertebrados",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "2-3 cm" },
+        { name: "Temperatura", value: "20-28°C" },
+        { name: "pH", value: "6.5-8.0" },
+      ],
+      additionalInfo: [
+        "Ótimo limpador de algas e restos orgânicos",
+        "Reproduz-se facilmente em condições adequadas",
+        "Alimentação: ração específica para camarões, vegetais, algas",
+        "Expectativa de vida: 1-2 anos",
+      ],
+    },
+    {
+      id: 22,
+      name: "Camarão Amano",
+      scientificName: "Caridina multidentata",
+      type: "freshwater",
+      price: 19.9,
+      image:
+        "https://images.tcdn.com.br/img/img_prod/648834/camarao_takashi_amano_caridina_multidentata_5_unidades_7779_9_42b3e269ba81465eca29f6b8ee987025.jpeg",
+      description:
+        "Camarão maior conhecido por seu eficiente trabalho no controle de algas.",
+      stock: 15,
+      category: "invertebrados",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "4-5 cm" },
+        { name: "Temperatura", value: "18-27°C" },
+        { name: "pH", value: "6.5-7.5" },
+      ],
+      additionalInfo: [
+        "Considerado o melhor camarão para controle de algas",
+        "Difícil reprodução em cativeiro",
+        "Alimentação: algas, detritos, ração específica",
+        "Expectativa de vida: 2-3 anos",
+      ],
+    },
+    {
+      id: 23,
+      name: "Caramujo Neritina",
+      scientificName: "Neritina natalensis",
+      type: "freshwater",
+      price: 8.9,
+      image:
+        "https://images.tcdn.com.br/img/img_prod/648834/neritina_zebra_2911_1_8d166e14d5686b1b9e659541fa25d1f9.jpg",
+      description:
+        "Caramujo com padrões listrados, excelente para controle de algas.",
+      stock: 20,
+      category: "invertebrados",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "1.5-2.5 cm" },
+        { name: "Temperatura", value: "22-28°C" },
+        { name: "pH", value: "7.0-8.5" },
+      ],
+      additionalInfo: [
+        "Não se reproduz em água doce",
+        "Não come plantas do aquário",
+        "Excelente consumidor de algas",
+        "Expectativa de vida: 1-2 anos",
+      ],
+    },
+    {
+      id: 24,
+      name: "Tetras Preto",
+      scientificName: "Gymnocorymbus ternetzi",
+      type: "freshwater",
+      price: 5.5,
+      image:
+        "https://www.petz.com.br/blog/wp-content/uploads/2020/03/tetra-negro-pet.jpg",
+      description:
+        "Peixe de cardume com corpo achatado lateralmente e coloração escura.",
+      stock: 35,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "4-5 cm" },
+        { name: "Temperatura", value: "22-28°C" },
+        { name: "pH", value: "6.0-7.5" },
+      ],
+      additionalInfo: [
+        "Ideal para aquários comunitários",
+        "Manter em grupos de 6 ou mais exemplares",
+        "Alimentação: ração em flocos, alimentos vivos pequenos",
+        "Expectativa de vida: 3-5 anos",
+      ],
+    },
+    {
+      id: 25,
+      name: "Camarão Crystal Red",
+      scientificName: "Caridina cantonensis",
+      type: "freshwater",
+      price: 49.9,
+      image:
+        "https://images.tcdn.com.br/img/img_prod/648834/red_cristal_pure_red_line_prl_73_1_20190610164921.jpeg",
+      description:
+        "Camarão ornamental com padrões vermelho e branco cristalinos.",
+      stock: 10,
+      category: "invertebrados",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "2-2.5 cm" },
+        { name: "Temperatura", value: "18-24°C" },
+        { name: "pH", value: "5.8-6.8" },
+      ],
+      additionalInfo: [
+        "Exige água mais ácida e parâmetros estáveis",
+        "Reprodução em água doce possível com condições adequadas",
+        "Alimentação: ração específica, folhas de amêndoa, algas",
+        "Expectativa de vida: 1.5-2 anos",
+      ],
+      isNew: true,
+    },
+    {
+      id: 26,
+      name: "Apistogramma Ramirezi",
+      scientificName: "Mikrogeophagus ramirezi",
+      type: "freshwater",
+      price: 39.9,
+      image:
+        "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQNTllUMpZrpEUbKWN0sP7OWUmRPV2AV56txVnslyyiOzug5r3KpWA26qgD_kp9gW8eGTTbVDcpYRuK5f_uV6apdySJmyHH77GHtGbzBQ",
+      description:
+        "Ciclídeo anão colorido e pacífico, ótimo para aquários comunitários.",
+      stock: 8,
+      category: "peixes",
+      temperament: "Semi-agressivo",
+      specifications: [
+        { name: "Tamanho", value: "5-7 cm" },
+        { name: "Temperatura", value: "26-30°C" },
+        { name: "pH", value: "5.5-6.5" },
+      ],
+      additionalInfo: [
+        "Prefere aquários bem plantados com substratos escuros",
+        "Forma casais monogâmicos",
+        "Alimentação: ração em flocos, artêmias, larvas",
+        "Expectativa de vida: 2-4 anos",
+      ],
+    },
+    {
+      id: 27,
+      name: "Carpa Koi",
+      scientificName: "Cyprinus carpio koi",
+      type: "freshwater",
+      price: 129.9,
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXgQ8jeEaJgwQQOj8Yx4PqXsXyKWDatXGwVw&s",
+      description:
+        "Peixe ornamental japonês com padrões coloridos exclusivos. Tamanho pequeno.",
+      stock: 3,
+      category: "peixes",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "15-25 cm (jovem)" },
+        { name: "Temperatura", value: "18-25°C" },
+        { name: "pH", value: "6.5-8.5" },
+      ],
+      additionalInfo: [
+        "Idealmente mantido em lagos ou aquários muito grandes",
+        "Pode crescer até 60-90 cm em condições ideais",
+        "Alimentação: ração para koi, vegetais, frutas",
+        "Expectativa de vida: 20-30 anos ou mais",
+      ],
+      isNew: true,
+    },
+    {
+      id: 29,
+      name: "Caramujo Physa",
+      scientificName: "Physa acuta",
+      type: "freshwater",
+      price: 3.9,
+      image:
+        "https://www.diario7.com.br/wp-content/uploads/2023/09/caramujo-caramujo-Physa-02-1-scaled.jpg",
+      description:
+        "Pequeno caramujo de crescimento rápido, útil para limpeza de aquários.",
+      stock: 50,
+      category: "invertebrados",
+      temperament: "Pacífico",
+      specifications: [
+        { name: "Tamanho", value: "0.5-1.5 cm" },
+        { name: "Temperatura", value: "18-30°C" },
+        { name: "pH", value: "6.5-8.0" },
+      ],
+      additionalInfo: [
+        "Reprodução rápida, podendo tornar-se invasivo",
+        "Ótimo detritívoro e consumidor de algas",
+        "Serve como alimento para peixes predadores",
+        "Expectativa de vida: 6 meses a 1 ano",
+      ],
+    },
     // Adicione mais produtos aqui
   ];
+
+  // Filter products based on search term and filter type
+  const filteredProducts = fishProducts.filter((product) => {
+    return (
+      (filterType === "all" || product.type === filterType) &&
+      (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.scientificName &&
+          product.scientificName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())))
+    );
+  });
+
+  // Sort products based on selected sort option
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case "price-asc":
+        return a.price - b.price;
+      case "price-desc":
+        return b.price - a.price;
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "newest":
+        // Assuming newer products have higher IDs
+        return b.id - a.id;
+      default:
+        // Featured - default sorting
+        return 0;
+    }
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  const paginatedProducts = sortedProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to first page when filter, search, or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterType, sortBy]);
+
+  const scrollToTop = () => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage === currentPage) return;
+    setCurrentPage(newPage);
+    scrollToTop();
+  };
 
   return (
     <div className="min-h-screen">
@@ -137,6 +797,8 @@ const ProductsFish = () => {
                   border-2 border-gray-200 bg-white text-gray-700
                   cursor-pointer font-medium
                   focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
               >
                 <option value="" disabled>
                   Ordenar por
@@ -162,86 +824,262 @@ const ProductsFish = () => {
         </div>
 
         {/* Product Grid */}
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {fishProducts.map((product) => (
-            <motion.div
-              key={product.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100"
-              whileHover={{ y: -5 }}
-            >
-              <div className="relative group">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {product.stock <= 5 && product.stock > 0 && (
-                  <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
-                    Últimas unidades
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-lg text-gray-600">
+              Nenhum produto encontrado com esse critério.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {paginatedProducts.map((product) => (
+              <motion.div
+                key={product.id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100"
+                whileHover={{ y: -5 }}
+              >
+                <div className="relative group">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {product.stock <= 5 && product.stock > 0 && (
+                    <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+                      Últimas unidades
+                    </span>
+                  )}
+                  {product.isNew && (
+                    <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
+                      Novo
+                    </span>
+                  )}
+                </div>
+
+                <div className="p-6 flex flex-col h-[280px]">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-bold text-gray-800">
+                      {product.name}
+                    </h3>
+                    <span className="text-sm text-gray-500">
+                      {product.scientificName}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
+                      {product.type === "freshwater"
+                        ? "Água Doce"
+                        : "Água Salgada"}
+                    </span>
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                      {product.temperament}
+                    </span>
+                  </div>
+
+                  <div className="flex-grow">
+                    <p className="text-gray-600 text-sm line-clamp-3">
+                      {product.description}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between items-center mb-4 mt-auto pt-4">
+                    <span className="text-2xl font-bold text-blue-600">
+                      R$ {product.price.toFixed(2)}
+                    </span>
+                    <span
+                      className={`text-sm ${
+                        product.stock > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {product.stock > 0
+                        ? `${product.stock} em estoque`
+                        : "Indisponível"}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setSelectedProduct(product)}
+                      className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      Detalhes
+                    </button>
+                    <button
+                      onClick={() => addToCart(product)}
+                      disabled={product.stock === 0}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <FaShoppingCart /> Comprar
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <motion.div
+            className="mt-10 pb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+          >
+            <div className="flex flex-col items-center">
+              <span className="text-sm text-gray-700 mb-3">
+                Página <span className="font-semibold">{currentPage}</span> de{" "}
+                <span className="font-semibold">{totalPages}</span> (
+                {filteredProducts.length} produtos)
+              </span>
+
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                    currentPage === 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
+                  }`}
+                  aria-label="Página anterior"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  Anterior
+                </button>
+
+                <div className="hidden sm:flex space-x-1">
+                  {/* First page */}
+                  {currentPage > 2 && (
+                    <button
+                      onClick={() => handlePageChange(1)}
+                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                    >
+                      1
+                    </button>
+                  )}
+
+                  {/* Ellipsis for skipped pages */}
+                  {currentPage > 3 && (
+                    <span className="px-1.5 py-1.5 text-gray-500">...</span>
+                  )}
+
+                  {/* Previous page if not first */}
+                  {currentPage > 1 && (
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                    >
+                      {currentPage - 1}
+                    </button>
+                  )}
+
+                  {/* Current page */}
+                  <button
+                    className="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium"
+                    aria-current="page"
+                  >
+                    {currentPage}
+                  </button>
+
+                  {/* Next page if not last */}
+                  {currentPage < totalPages && (
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                    >
+                      {currentPage + 1}
+                    </button>
+                  )}
+
+                  {/* Ellipsis for skipped pages */}
+                  {currentPage < totalPages - 2 && (
+                    <span className="px-1.5 py-1.5 text-gray-500">...</span>
+                  )}
+
+                  {/* Last page */}
+                  {currentPage < totalPages - 1 && (
+                    <button
+                      onClick={() => handlePageChange(totalPages)}
+                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
+                    >
+                      {totalPages}
+                    </button>
+                  )}
+                </div>
+
+                {/* Mobile pagination with current/total */}
+                <div className="flex sm:hidden items-center px-3 py-1.5 bg-gray-100 rounded-lg">
+                  <span className="text-gray-600 text-sm font-medium">
+                    {currentPage} / {totalPages}
                   </span>
-                )}
-                {product.isNew && (
-                  <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
-                    Novo
-                  </span>
-                )}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                    currentPage === totalPages
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
+                  }`}
+                  aria-label="Próxima página"
+                >
+                  Próxima
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 ml-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
               </div>
 
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-bold text-gray-800">
-                    {product.name}
-                  </h3>
-                  <span className="text-sm text-gray-500">
-                    {product.scientificName}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                    {product.type === "freshwater"
-                      ? "Água Doce"
-                      : "Água Salgada"}
-                  </span>
-                  <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
-                    {product.temperament}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-2xl font-bold text-blue-600">
-                    R$ {product.price.toFixed(2)}
-                  </span>
-                  <span
-                    className={`text-sm ${
-                      product.stock > 0 ? "text-green-600" : "text-red-600"
-                    }`}
+              {/* Jump to page for larger screens */}
+              {totalPages > 3 && (
+                <div className="hidden md:flex items-center gap-2 mt-2">
+                  <span className="text-sm text-gray-600">Ir para:</span>
+                  <select
+                    className="bg-white border border-gray-300 text-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={currentPage}
+                    onChange={(e) => handlePageChange(Number(e.target.value))}
+                    aria-label="Selecionar página"
                   >
-                    {product.stock > 0
-                      ? `${product.stock} em estoque`
-                      : "Indisponível"}
-                  </span>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => (
+                        <option key={page} value={page}>
+                          {page}
+                        </option>
+                      )
+                    )}
+                  </select>
                 </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setSelectedProduct(product)}
-                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    Detalhes
-                  </button>
-                  <button
-                    onClick={() => addToCart(product)}
-                    disabled={product.stock === 0}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <FaShoppingCart /> Comprar
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              )}
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Product Detail Modal */}

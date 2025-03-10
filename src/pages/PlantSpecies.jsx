@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
@@ -484,7 +484,7 @@ const PlantSpecies = () => {
   );
 
   // Reset to first page when filter or search changes
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterType]);
 
@@ -593,7 +593,7 @@ const PlantSpecies = () => {
                 transition={{ type: "spring", stiffness: 300 }}
                 onClick={() => openPlantDetails(plant)}
               >
-                <div className="h-48 bg-gray-200 overflow-hidden">
+                <div className="h-64 bg-gray-200 overflow-hidden">
                   <img
                     src={plant.image}
                     alt={plant.name}
@@ -650,86 +650,166 @@ const PlantSpecies = () => {
             ))}
           </div>
 
-          {/* Pagination Controls */}
+          {/* Updated Pagination Controls */}
           {totalPages > 1 && (
-            <div className="mt-8 flex flex-wrap justify-center gap-2">
-              <button
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
-                className={`px-3 py-1 rounded-lg ${
-                  currentPage === 1
-                    ? "bg-gray-100 text-gray-400"
-                    : "bg-green-600 text-white hover:bg-green-700"
-                }`}
-              >
-                1
-              </button>
+            <motion.div
+              className="mt-10 pb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+            >
+              <div className="flex flex-col items-center">
+                <span className="text-sm text-gray-700 mb-3">
+                  Página <span className="font-semibold">{currentPage}</span> de{" "}
+                  <span className="font-semibold">{totalPages}</span> (
+                  {filteredPlants.length} plantas)
+                </span>
 
-              {currentPage > 3 && <span className="px-2 py-1">...</span>}
-
-              {Array.from({ length: 3 }, (_, i) => {
-                const pageNum = currentPage + i - 1;
-                if (pageNum > 1 && pageNum < totalPages) {
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-1 rounded-lg ${
-                        pageNum === currentPage
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
+                <div className="flex flex-wrap justify-center gap-2 mb-4">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                      currentPage === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-green-100 text-green-700 hover:bg-green-600 hover:text-white"
+                    }`}
+                    aria-label="Página anterior"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      {pageNum}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                    Anterior
+                  </button>
+
+                  <div className="hidden sm:flex space-x-1">
+                    {/* First page */}
+                    {currentPage > 2 && (
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        className="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-600 hover:text-white transition-all duration-200"
+                      >
+                        1
+                      </button>
+                    )}
+
+                    {/* Ellipsis for skipped pages */}
+                    {currentPage > 3 && (
+                      <span className="px-1.5 py-1.5 text-gray-500">...</span>
+                    )}
+
+                    {/* Previous page if not first */}
+                    {currentPage > 1 && (
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        className="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-600 hover:text-white transition-all duration-200"
+                      >
+                        {currentPage - 1}
+                      </button>
+                    )}
+
+                    {/* Current page */}
+                    <button
+                      className="px-3 py-1.5 rounded-lg bg-green-600 text-white font-medium"
+                      aria-current="page"
+                    >
+                      {currentPage}
                     </button>
-                  );
-                }
-                return null;
-              })}
 
-              {currentPage < totalPages - 2 && (
-                <span className="px-2 py-1">...</span>
-              )}
+                    {/* Next page if not last */}
+                    {currentPage < totalPages && (
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        className="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-600 hover:text-white transition-all duration-200"
+                      >
+                        {currentPage + 1}
+                      </button>
+                    )}
 
-              {totalPages > 1 && (
-                <button
-                  onClick={() => handlePageChange(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className={`px-3 py-1 rounded-lg ${
-                    currentPage === totalPages
-                      ? "bg-gray-100 text-gray-400"
-                      : "bg-green-600 text-white hover:bg-green-700"
-                  }`}
-                >
-                  {totalPages}
-                </button>
-              )}
+                    {/* Ellipsis for skipped pages */}
+                    {currentPage < totalPages - 2 && (
+                      <span className="px-1.5 py-1.5 text-gray-500">...</span>
+                    )}
 
-              <div className="w-full md:w-auto flex justify-center gap-2 mt-2 md:mt-0">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`px-3 py-1 rounded-lg ${
-                    currentPage === 1
-                      ? "bg-gray-100 text-gray-400"
-                      : "bg-green-600 text-white hover:bg-green-700"
-                  }`}
-                >
-                  Anterior
-                </button>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className={`px-3 py-1 rounded-lg ${
-                    currentPage === totalPages
-                      ? "bg-gray-100 text-gray-400"
-                      : "bg-green-600 text-white hover:bg-green-700"
-                  }`}
-                >
-                  Próxima
-                </button>
+                    {/* Last page */}
+                    {currentPage < totalPages - 1 && (
+                      <button
+                        onClick={() => handlePageChange(totalPages)}
+                        className="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-600 hover:text-white transition-all duration-200"
+                      >
+                        {totalPages}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Mobile pagination with current/total */}
+                  <div className="flex sm:hidden items-center px-3 py-1.5 bg-gray-100 rounded-lg">
+                    <span className="text-gray-600 text-sm font-medium">
+                      {currentPage} / {totalPages}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                      currentPage === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-green-100 text-green-700 hover:bg-green-600 hover:text-white"
+                    }`}
+                    aria-label="Próxima página"
+                  >
+                    Próxima
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 ml-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Jump to page for larger screens */}
+                {totalPages > 3 && (
+                  <div className="hidden md:flex items-center gap-2 mt-2">
+                    <span className="text-sm text-gray-600">Ir para:</span>
+                    <select
+                      className="bg-white border border-gray-300 text-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                      value={currentPage}
+                      onChange={(e) => handlePageChange(Number(e.target.value))}
+                      aria-label="Selecionar página"
+                    >
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <option key={page} value={page}>
+                            {page}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  </div>
+                )}
               </div>
-            </div>
+            </motion.div>
           )}
         </>
       )}
