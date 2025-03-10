@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../contexts/CartContext";
 import { motion } from "framer-motion";
 import {
@@ -13,7 +14,6 @@ import {
   FaTruck,
   FaBoxOpen,
 } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, clearCart } =
@@ -69,12 +69,12 @@ const CartPage = () => {
       className="max-w-6xl mx-auto px-4 py-12"
     >
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Cart Items Section */}
+        {/* Cart Items Section - Improved for mobile */}
         <div className="flex-grow">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
+            <div className="p-4 sm:p-6 border-b border-gray-100">
               <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2 sm:gap-3">
                   <FaShoppingCart className="text-blue-500" />
                   Seu Carrinho
                   <span className="text-sm font-normal text-gray-500">
@@ -95,28 +95,40 @@ const CartPage = () => {
                 <motion.div
                   key={item.id}
                   layout
-                  className="p-6 flex items-center gap-6"
+                  className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6"
                 >
-                  <div className="w-24 h-24 flex-shrink-0">
+                  <div className="w-full sm:w-24 h-36 sm:h-24 flex-shrink-0 mx-auto sm:mx-0">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-contain sm:object-cover rounded-lg"
                     />
                   </div>
 
-                  <div className="flex-grow">
-                    <h3 className="font-medium text-gray-800 mb-1">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-2">
+                  <div className="flex-grow w-full">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
+                      <h3 className="font-medium text-gray-800 text-lg">
+                        {item.name}
+                      </h3>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500 mb-1">
+                          Preço unitário
+                        </p>
+                        <p className="text-lg font-bold text-gray-800">
+                          R$ {item.price.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-500 mb-3">
                       {item.category === "peixes"
                         ? "Peixe"
                         : item.category === "plantas"
                         ? "Planta"
                         : "Equipamento"}
                     </p>
-                    <div className="flex items-center gap-4">
+
+                    <div className="flex flex-wrap items-center justify-between gap-4">
                       <div className="flex items-center rounded-lg border-2 border-gray-200 overflow-hidden">
                         <motion.button
                           whileHover={{ backgroundColor: "#f3f4f6" }}
@@ -162,16 +174,19 @@ const CartPage = () => {
                         onClick={() => removeFromCart(item.id)}
                         className="text-red-400 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-50"
                       >
-                        <FaTrash />
+                        <FaTrash />{" "}
+                        <span className="ml-1 sm:hidden">Remover</span>
                       </motion.button>
                     </div>
-                  </div>
 
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500 mb-1">Preço unitário</p>
-                    <p className="text-lg font-bold text-gray-800">
-                      R$ {item.price.toFixed(2)}
-                    </p>
+                    <div className="w-full sm:hidden mt-3 pt-3 border-t border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <p className="font-medium">Subtotal:</p>
+                        <p className="font-bold">
+                          R$ {(item.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -187,8 +202,8 @@ const CartPage = () => {
           </Link>
         </div>
 
-        {/* Order Summary Section */}
-        <div className="lg:w-96">
+        {/* Order Summary Section - Improved for mobile */}
+        <div className="lg:w-96 mt-6 lg:mt-0">
           <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24">
             <h2 className="text-xl font-bold text-gray-800 mb-6">
               Resumo do Pedido

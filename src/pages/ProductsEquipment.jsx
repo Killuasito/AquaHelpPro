@@ -250,9 +250,9 @@ const ProductsEquipment = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Filter Section */}
+        {/* Filter Section - Improved Mobile Layout */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
             {/* Search Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -278,25 +278,45 @@ const ProductsEquipment = () => {
               )}
             </div>
 
-            {/* Filter Buttons */}
-            <div className="flex gap-2">
+            {/* Filter Buttons - Stack for mobile, flex for desktop */}
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-2">
               {equipmentTypes.map((type) => (
                 <motion.button
                   key={type.value}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setFilterType(type.value)}
-                  className={`flex-1 px-4 py-3 rounded-lg flex items-center justify-center gap-2 
-                    transition-all duration-200 font-medium ${
+                  onClick={() =>
+                    setFilterType(
+                      type.value === filterType ? "all" : type.value
+                    )
+                  }
+                  className={`px-3 py-2 sm:py-3 sm:flex-1 rounded-lg flex items-center justify-center gap-1 sm:gap-2 
+                    transition-all duration-200 text-sm sm:text-base sm:font-medium ${
                       filterType === type.value
                         ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-lg"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                 >
-                  {type.icon}
-                  {type.label}
+                  <span className="text-base sm:text-lg">{type.icon}</span>
+                  <span className="hidden xs:inline">{type.label}</span>
                 </motion.button>
               ))}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setFilterType("all")}
+                className={`px-3 py-2 sm:py-3 sm:flex-1 rounded-lg flex items-center justify-center gap-1 sm:gap-2 
+                  transition-all duration-200 text-sm sm:text-base sm:font-medium ${
+                    filterType === "all"
+                      ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white shadow-lg"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+              >
+                <span className="text-base sm:text-lg">
+                  <FaTools />
+                </span>
+                <span className="hidden xs:inline">Todos</span>
+              </motion.button>
             </div>
 
             {/* Sort Dropdown */}
@@ -308,15 +328,13 @@ const ProductsEquipment = () => {
                   cursor-pointer font-medium
                   focus:border-gray-500 focus:ring-2 focus:ring-gray-200
                   transition-all duration-200"
+                value={sortBy}
               >
-                <option value="" disabled selected>
-                  Ordenar por
-                </option>
-                {sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
+                <option value="featured">Ordenar: Em Destaque</option>
+                <option value="price-asc">Ordenar: Menor Preço</option>
+                <option value="price-desc">Ordenar: Maior Preço</option>
+                <option value="name">Ordenar: Nome A-Z</option>
+                <option value="newest">Ordenar: Mais Recentes</option>
               </select>
               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 <FaSort className="w-4 h-4 text-gray-400" />
@@ -326,6 +344,28 @@ const ProductsEquipment = () => {
               </div>
             </div>
           </div>
+
+          {/* Active Filters Display */}
+          {filterType !== "all" && (
+            <div className="mt-4 flex items-center">
+              <span className="text-sm text-gray-500 mr-2">
+                Filtros ativos:
+              </span>
+              <span className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm flex items-center">
+                {filterType === "filter"
+                  ? "Filtros"
+                  : filterType === "lighting"
+                  ? "Iluminação"
+                  : "Outros"}
+                <button
+                  onClick={() => setFilterType("all")}
+                  className="ml-1 text-gray-600 hover:text-gray-800"
+                >
+                  <FaTimes size={12} />
+                </button>
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Product Grid */}
