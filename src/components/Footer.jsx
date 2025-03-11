@@ -182,6 +182,9 @@ const Footer = () => {
               <FooterLink to="/" text="Início" />
               <FooterLink to="/register" text="Registrar Aquário" />
               <FooterLink to="/tips" text="Dicas" />
+              <FooterLink to="/products/fish" text="Nossos Peixes" />
+              <FooterLink to="/products/plants" text="Nossas Plantas" />
+              <FooterLink to="/products/equipment" text="Nossos Equipamentos" />
             </ul>
           </motion.div>
 

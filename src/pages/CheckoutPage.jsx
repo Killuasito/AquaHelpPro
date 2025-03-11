@@ -16,7 +16,208 @@ import {
   FaTimes,
   FaCopy,
   FaRegClock,
+  FaExclamationTriangle,
+  FaSearch,
 } from "react-icons/fa";
+
+// Input mask helpers
+const formatCPF = (value) => {
+  return value
+    .replace(/\D/g, "") // Remove non-digits
+    .replace(/(\d{3})(\d)/, "$1.$2") // Insert dot after 3 digits
+    .replace(/(\d{3})(\d)/, "$1.$2") // Insert dot after next 3 digits
+    .replace(/(\d{3})(\d{1,2})/, "$1-$2") // Insert dash before last 2 digits
+    .substring(0, 14); // Limit to 11 digits + 3 formatting chars
+};
+
+const formatPhone = (value) => {
+  return value
+    .replace(/\D/g, "") // Remove non-digits
+    .replace(/(\d{2})(\d)/, "($1) $2") // Format first 2 digits with parentheses
+    .replace(/(\d{5})(\d)/, "$1-$2") // Insert dash after 5 digits
+    .substring(0, 15); // Limit to 11 digits + 4 formatting chars
+};
+
+const formatCEP = (value) => {
+  return value
+    .replace(/\D/g, "") // Remove non-digits
+    .replace(/(\d{5})(\d)/, "$1-$2") // Insert dash after 5 digits
+    .substring(0, 9); // Limit to 8 digits + 1 formatting char
+};
+
+// CEP Service for address lookup
+const CEPService = {
+  fetchAddressByCEP: async (cep) => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length !== 8) return null;
+
+    try {
+      const response = await fetch(
+        `https://viacep.com.br/ws/${cleanCep}/json/`
+      );
+      const data = await response.json();
+
+      if (data.erro) return null;
+
+      return {
+        street: data.logradouro,
+        neighborhood: data.bairro,
+        city: data.localidade,
+        state: data.uf,
+        complement: data.complemento,
+      };
+    } catch (error) {
+      console.error("Error fetching CEP data:", error);
+      return null;
+    }
+  },
+};
+
+// Mock payment service client-side only
+const PaymentService = {
+  // Create a simulated transaction
+  createTransaction: (orderData) => {
+    return new Promise((resolve) => {
+      const transactionId = `tx_${Math.random().toString(36).substr(2, 9)}`;
+
+      // Store in localStorage for persistence
+      const transaction = {
+        id: transactionId,
+        ...orderData,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Save to localStorage
+      const transactions = JSON.parse(
+        localStorage.getItem("transactions") || "{}"
+      );
+      transactions[transactionId] = transaction;
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+
+      // Simulate network delay
+      setTimeout(() => {
+        // Handle different payment methods
+        if (orderData.paymentMethod === "credit") {
+          resolve({
+            success: true,
+            transactionId,
+            message: "Processando pagamento com cartão",
+          });
+        } else if (orderData.paymentMethod === "boleto") {
+          // Generate mock boleto
+          const dueDate = new Date();
+          dueDate.setDate(dueDate.getDate() + 3);
+
+          const boleto = {
+            barCode: "23793381286000782798602186300008790350000010000",
+            barCodeImage: "https://dummyimage.com/400x100/000/fff&text=Boleto",
+            dueDate: dueDate.toLocaleDateString("pt-BR"),
+            pdfUrl: "#",
+          };
+
+          transactions[transactionId].boleto = boleto;
+          localStorage.setItem("transactions", JSON.stringify(transactions));
+
+          resolve({
+            success: true,
+            transactionId,
+            boleto,
+            message: "Boleto gerado com sucesso!",
+          });
+        } else if (orderData.paymentMethod === "pix") {
+          // Generate mock PIX data
+          const pix = {
+            code: `00020126580014BR.GOV.BCB.PIX0136${Math.random()
+              .toString(36)
+              .substr(2, 20)}5204000053039865406${orderData.totalAmount.toFixed(
+              2
+            )}5802BR5913Aquarium Store6008Sao Paulo62150511${transactionId}6304E2B3`,
+            qrCodeImage:
+              "https://dummyimage.com/400x400/000/fff&text=QR+Code+PIX",
+          };
+
+          transactions[transactionId].pix = pix;
+          localStorage.setItem("transactions", JSON.stringify(transactions));
+
+          resolve({
+            success: true,
+            transactionId,
+            pix,
+            message: "PIX gerado com sucesso!",
+          });
+        }
+      }, 700);
+    });
+  },
+
+  // Check transaction status (simulates checking with payment provider)
+  checkPaymentStatus: (transactionId) => {
+    return new Promise((resolve) => {
+      // Get transaction from localStorage
+      const transactions = JSON.parse(
+        localStorage.getItem("transactions") || "{}"
+      );
+      const transaction = transactions[transactionId];
+
+      if (!transaction) {
+        resolve({
+          success: false,
+          message: "Transação não encontrada",
+        });
+        return;
+      }
+
+      // Simulate network delay
+      setTimeout(() => {
+        // For credit card, simulate 80% success rate
+        if (
+          transaction.paymentMethod === "credit" &&
+          transaction.status === "pending"
+        ) {
+          const success = Math.random() < 0.8;
+
+          if (success) {
+            transaction.status = "completed";
+            transaction.updatedAt = new Date().toISOString();
+          } else if (Math.random() < 0.3) {
+            // 30% chance to fail if not success
+            transaction.status = "failed";
+            transaction.error = "Cartão recusado pela operadora";
+            transaction.updatedAt = new Date().toISOString();
+          }
+        }
+
+        // For PIX, simulate gradual payment confirmation (10% chance each check)
+        if (
+          transaction.paymentMethod === "pix" &&
+          transaction.status === "pending"
+        ) {
+          if (Math.random() < 0.1) {
+            transaction.status = "completed";
+            transaction.updatedAt = new Date().toISOString();
+          }
+        }
+
+        // Update localStorage
+        transactions[transactionId] = transaction;
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+
+        resolve({
+          success: true,
+          status: transaction.status,
+          message:
+            transaction.status === "completed"
+              ? "Pagamento confirmado!"
+              : transaction.status === "failed"
+              ? transaction.error || "Pagamento falhou."
+              : "Aguardando pagamento.",
+        });
+      }, 500);
+    });
+  },
+};
 
 const CheckoutPage = () => {
   const [step, setStep] = useState(1);
@@ -28,7 +229,7 @@ const CheckoutPage = () => {
   // New state for tracking payment completion
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   // Generate a fake PIX code
-  const [pixCode] = useState("546.965.398-65");
+  const [pixCode, setPixCode] = useState("546.965.398-65");
 
   const [formData, setFormData] = useState({
     // Dados pessoais
@@ -64,7 +265,77 @@ const CheckoutPage = () => {
   );
 
   const handleFormChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    let formattedValue = value;
+
+    // Apply formatting for specific fields
+    if (name === "cpf") {
+      formattedValue = formatCPF(value);
+    } else if (name === "phone") {
+      formattedValue = formatPhone(value);
+    } else if (name === "cep") {
+      formattedValue = formatCEP(value);
+
+      // If we have a complete CEP, fetch address data
+      if (formattedValue.length === 9) {
+        fetchAddressByCEP(formattedValue);
+      }
+    } else if (name === "cardNumber") {
+      formattedValue = value
+        .replace(/\D/g, "")
+        .replace(/(\d{4})(\d)/, "$1 $2")
+        .replace(/(\d{4})(\d)/, "$1 $2")
+        .replace(/(\d{4})(\d)/, "$1 $2")
+        .substring(0, 19);
+    } else if (name === "cardExpiry") {
+      formattedValue = value
+        .replace(/\D/g, "")
+        .replace(/(\d{2})(\d)/, "$1/$2")
+        .substring(0, 5);
+    } else if (name === "cardCvv") {
+      formattedValue = value.replace(/\D/g, "").substring(0, 3);
+    }
+
+    setFormData({ ...formData, [name]: formattedValue });
+  };
+
+  // Function to fetch address by CEP
+  const [isLoadingCEP, setIsLoadingCEP] = useState(false);
+  const [cepError, setCepError] = useState(null);
+
+  const fetchAddressByCEP = async (cep) => {
+    setIsLoadingCEP(true);
+    setCepError(null);
+
+    try {
+      const addressData = await CEPService.fetchAddressByCEP(cep);
+
+      if (addressData) {
+        setFormData((prev) => ({
+          ...prev,
+          street: addressData.street || prev.street,
+          neighborhood: addressData.neighborhood || prev.neighborhood,
+          city: addressData.city || prev.city,
+          state: addressData.state || prev.state,
+          complement: addressData.complement || prev.complement,
+        }));
+      } else {
+        setCepError(
+          "CEP não encontrado. Por favor, verifique o número ou preencha o endereço manualmente."
+        );
+      }
+    } catch (error) {
+      setCepError("Erro ao buscar endereço. Por favor, preencha manualmente.");
+    } finally {
+      setIsLoadingCEP(false);
+    }
+  };
+
+  // Function to manually search for CEP
+  const handleCEPSearch = () => {
+    if (formData.cep.length >= 8) {
+      fetchAddressByCEP(formData.cep);
+    }
   };
 
   // Function to copy PIX code to clipboard
@@ -85,6 +356,18 @@ const CheckoutPage = () => {
         error: null,
       });
       setPaymentCompleted(true);
+
+      // If we have a transaction ID, mark it as completed
+      if (transactionId) {
+        const transactions = JSON.parse(
+          localStorage.getItem("transactions") || "{}"
+        );
+        if (transactions[transactionId]) {
+          transactions[transactionId].status = "completed";
+          transactions[transactionId].updatedAt = new Date().toISOString();
+          localStorage.setItem("transactions", JSON.stringify(transactions));
+        }
+      }
     }, 2000);
   };
 
@@ -108,58 +391,279 @@ const CheckoutPage = () => {
     return true; // PIX doesn't require additional info
   };
 
-  // Process payment based on payment method
-  const processPayment = () => {
+  // New state for transaction tracking
+  const [transactionId, setTransactionId] = useState(null);
+  const [paymentPollingInterval, setPaymentPollingInterval] = useState(null);
+  const [paymentVerificationCount, setPaymentVerificationCount] = useState(0);
+  const [isPaymentBeingVerified, setIsPaymentBeingVerified] = useState(false);
+
+  // On component unmount, clear any intervals
+  useEffect(() => {
+    return () => {
+      if (paymentPollingInterval) clearInterval(paymentPollingInterval);
+    };
+  }, [paymentPollingInterval]);
+
+  // Function to check payment status from simulated service
+  const checkPaymentStatus = async (txId) => {
+    if (!txId) return;
+
+    try {
+      setIsPaymentBeingVerified(true);
+
+      const response = await PaymentService.checkPaymentStatus(txId);
+
+      if (response.status === "completed") {
+        // Payment confirmed
+        setPaymentStatus({
+          processing: false,
+          confirmed: true,
+          error: null,
+        });
+        setPaymentCompleted(true);
+
+        // Clear polling interval
+        if (paymentPollingInterval) {
+          clearInterval(paymentPollingInterval);
+          setPaymentPollingInterval(null);
+        }
+
+        // For credit card and confirmed PIX, proceed to confirmation
+        if (
+          formData.paymentMethod === "credit" ||
+          formData.paymentMethod === "pix"
+        ) {
+          clearCart();
+          setStep(4);
+        }
+      } else if (response.status === "pending") {
+        // Still waiting for payment
+        setPaymentStatus({
+          processing: false,
+          confirmed: false,
+          error: null,
+        });
+
+        // If we've been polling for too long, show a message
+        if (paymentVerificationCount > 24) {
+          setPaymentStatus({
+            processing: false,
+            confirmed: false,
+            error:
+              "Verificação de pagamento está demorando mais que o normal. Por favor, verifique seu app bancário ou tente novamente mais tarde.",
+          });
+
+          // Stop polling
+          if (paymentPollingInterval) {
+            clearInterval(paymentPollingInterval);
+            setPaymentPollingInterval(null);
+          }
+        }
+      } else if (response.status === "failed") {
+        // Payment failed
+        setPaymentStatus({
+          processing: false,
+          confirmed: false,
+          error:
+            response.message || "Pagamento falhou. Por favor, tente novamente.",
+        });
+
+        // Clear polling interval
+        if (paymentPollingInterval) {
+          clearInterval(paymentPollingInterval);
+          setPaymentPollingInterval(null);
+        }
+      }
+
+      setIsPaymentBeingVerified(false);
+      setPaymentVerificationCount((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error checking payment status:", error);
+
+      setPaymentStatus({
+        processing: false,
+        confirmed: false,
+        error:
+          "Erro ao verificar o status do pagamento. Por favor, tente novamente.",
+      });
+
+      setIsPaymentBeingVerified(false);
+    }
+  };
+
+  // Process payment based on payment method - client side only
+  const processPayment = async () => {
     setPaymentStatus({ processing: true, confirmed: false, error: null });
 
-    // Different handling based on payment method
-    if (formData.paymentMethod === "credit") {
-      // Credit card payment simulation
-      setTimeout(() => {
-        // 80% success rate
-        const success = Math.random() < 0.8;
+    try {
+      // Create order data
+      const orderData = {
+        customer: {
+          name: formData.name,
+          email: formData.email,
+          cpf: formData.cpf,
+          phone: formData.phone,
+        },
+        shipping: {
+          address: {
+            street: formData.street,
+            number: formData.number,
+            complement: formData.complement,
+            neighborhood: formData.neighborhood,
+            city: formData.city,
+            state: formData.state,
+            zipCode: formData.cep,
+          },
+        },
+        items: cartItems.map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+        })),
+        totalAmount: total,
+        paymentMethod: formData.paymentMethod,
+      };
 
-        if (success) {
+      // Add payment details based on method
+      if (formData.paymentMethod === "credit") {
+        orderData.payment = {
+          cardNumber: formData.cardNumber.replace(/\s/g, ""),
+          cardName: formData.cardName,
+          cardExpiry: formData.cardExpiry,
+          cardCvv: formData.cardCvv,
+        };
+      } else if (formData.paymentMethod === "boleto") {
+        orderData.payment = {
+          cpf: formData.cpfBoleto || formData.cpf,
+        };
+      } else if (formData.paymentMethod === "pix") {
+        orderData.payment = {
+          pixKey: formData.pixKey,
+        };
+      }
+
+      // Process using client-side payment service
+      const response = await PaymentService.createTransaction(orderData);
+
+      if (!response || !response.success) {
+        throw new Error(response?.message || "Falha ao processar o pagamento");
+      }
+
+      // Store transaction ID
+      setTransactionId(response.transactionId);
+
+      // Different handling based on payment method
+      if (formData.paymentMethod === "credit") {
+        // Start polling for credit card payment status
+        const intervalId = setInterval(() => {
+          checkPaymentStatus(response.transactionId);
+        }, 5000); // Check every 5 seconds
+
+        setPaymentPollingInterval(intervalId);
+
+        // Initial check
+        checkPaymentStatus(response.transactionId);
+      } else if (formData.paymentMethod === "boleto") {
+        // For boleto, we just show the boleto and don't need to verify payment immediately
+        setPaymentStatus({
+          processing: false,
+          confirmed: true,
+          error: null,
+        });
+
+        // Set boleto details
+        setBoletoDetails(response.boleto);
+
+        // Move to confirmation page with boleto details
+        setStep(4);
+      } else if (formData.paymentMethod === "pix") {
+        // For PIX, set the PIX code and QR code
+        setPixCode(response.pix.code);
+        setPixQrCodeImage(response.pix.qrCodeImage);
+
+        // Start polling for PIX payment
+        const intervalId = setInterval(() => {
+          checkPaymentStatus(response.transactionId);
+        }, 5000);
+
+        setPaymentPollingInterval(intervalId);
+
+        // Show PIX payment screen
+        setPaymentStatus({
+          processing: false,
+          confirmed: false,
+          error: null,
+        });
+
+        setStep(3.5);
+      }
+    } catch (error) {
+      console.error("Payment processing error:", error);
+
+      setPaymentStatus({
+        processing: false,
+        confirmed: false,
+        error:
+          error.message ||
+          "Ocorreu um erro ao processar o pagamento. Por favor, tente novamente.",
+      });
+    }
+  };
+
+  // New state for boleto details and PIX QR Code
+  const [boletoDetails, setBoletoDetails] = useState(null);
+  const [pixQrCodeImage, setPixQrCodeImage] = useState(null);
+
+  // Modified PIX confirmation handling - for client-side simulation
+  const manuallyCheckPixPayment = () => {
+    if (!transactionId) return;
+
+    // For demo purposes, let's simulate a 50% chance of payment confirmation when the user clicks "verify payment"
+    setPaymentStatus({ processing: true, confirmed: false, error: null });
+
+    setTimeout(() => {
+      // Get the current transaction
+      const transactions = JSON.parse(
+        localStorage.getItem("transactions") || "{}"
+      );
+      const transaction = transactions[transactionId];
+
+      if (transaction && transaction.paymentMethod === "pix") {
+        // 50% chance of payment confirmation when manually checking
+        if (Math.random() < 0.5) {
+          transaction.status = "completed";
+          transaction.updatedAt = new Date().toISOString();
+
+          // Update localStorage
+          transactions[transactionId] = transaction;
+          localStorage.setItem("transactions", JSON.stringify(transactions));
+
           setPaymentStatus({
             processing: false,
             confirmed: true,
             error: null,
           });
           setPaymentCompleted(true);
-          clearCart();
-          setStep(4);
+
+          // Clear polling
+          if (paymentPollingInterval) {
+            clearInterval(paymentPollingInterval);
+            setPaymentPollingInterval(null);
+          }
         } else {
+          // Payment still pending
           setPaymentStatus({
             processing: false,
             confirmed: false,
-            error:
-              "Não foi possível processar o pagamento com cartão. Por favor, verifique os dados ou tente outro método.",
+            error: null,
           });
         }
-      }, 2000);
-    } else if (formData.paymentMethod === "boleto") {
-      // Boleto generation always succeeds
-      setTimeout(() => {
-        setPaymentStatus({
-          processing: false,
-          confirmed: true,
-          error: null,
-        });
-        // Boleto requires manual payment confirmation later
-        setStep(4); // Move to confirmation page with boleto details
-      }, 1500);
-    } else if (formData.paymentMethod === "pix") {
-      // For PIX, we just generate the code and wait for customer to confirm
-      setTimeout(() => {
-        setPaymentStatus({
-          processing: false,
-          confirmed: false,
-          error: null,
-        });
-        // Show PIX payment details but don't advance to confirmation yet
-        setStep(3.5); // Using 3.5 to represent the PIX payment step
-      }, 1000);
-    }
+      }
+
+      setIsPaymentBeingVerified(false);
+    }, 1500);
   };
 
   const handleSubmit = (e) => {
@@ -175,6 +679,154 @@ const CheckoutPage = () => {
       setStep(4);
     }
   };
+
+  // Update the PIX payment section to use actual QR code and manual verification:
+  const renderPixPaymentSection = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+        <FaQrcode className="text-blue-500" />
+        Pagamento via PIX
+      </h2>
+
+      {paymentStatus.error && (
+        <div className="p-4 mb-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start">
+            <FaTimes className="text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+            <p className="text-red-700">{paymentStatus.error}</p>
+          </div>
+        </div>
+      )}
+
+      <div className="p-6 bg-blue-50 rounded-lg border border-blue-100">
+        <div className="flex flex-col items-center space-y-4">
+          <p className="text-blue-700 font-medium text-center mb-2">
+            Escaneie o QR Code abaixo ou copie o código PIX:
+          </p>
+
+          {/* QR Code */}
+          <div className="bg-white p-4 border-2 border-blue-200 rounded-lg mb-4">
+            {pixQrCodeImage ? (
+              <img
+                src={pixQrCodeImage}
+                alt="QR Code do PIX"
+                className="w-64 h-64 object-contain"
+              />
+            ) : (
+              <div className="w-64 h-64 flex items-center justify-center">
+                <FaSpinner className="text-6xl text-blue-400 animate-spin" />
+              </div>
+            )}
+          </div>
+
+          {/* PIX Key */}
+          <div className="w-full">
+            <p className="text-sm text-blue-700 mb-1 font-medium">
+              Código PIX:
+            </p>
+            <div className="flex items-center">
+              <input
+                type="text"
+                value={pixCode}
+                readOnly
+                className="flex-grow bg-white border border-blue-200 rounded-l-lg py-2 px-3 text-sm"
+              />
+              <button
+                onClick={copyPixCode}
+                className="bg-blue-600 text-white p-2 rounded-r-lg hover:bg-blue-700"
+                type="button"
+              >
+                <FaCopy />
+              </button>
+            </div>
+          </div>
+
+          {/* Payment instructions */}
+          <div className="bg-white p-3 rounded-lg border border-blue-100 w-full text-sm text-blue-800">
+            <ol className="list-decimal pl-5 space-y-1">
+              <li>Abra o aplicativo do seu banco</li>
+              <li>Escolha a opção "PIX" ou "Pagar com PIX"</li>
+              <li>Escaneie o QR code acima ou cole o código copiado</li>
+              <li>Confirme os dados e finalize o pagamento</li>
+              <li>Após o pagamento, clique em "Verificar Pagamento" abaixo</li>
+            </ol>
+          </div>
+
+          {/* Payment status */}
+          <div className="mt-6 w-full p-4 rounded-lg bg-blue-100 border border-blue-200">
+            <div className="flex items-center justify-between">
+              <span className="text-blue-800 flex items-center">
+                <FaRegClock className="mr-2" /> Status:
+              </span>
+              <span className="font-medium">
+                {paymentCompleted ? (
+                  <span className="text-green-600 flex items-center">
+                    <FaCheck className="mr-1" /> Pagamento Confirmado
+                  </span>
+                ) : isPaymentBeingVerified ? (
+                  <span className="text-blue-600 flex items-center">
+                    <FaSpinner className="animate-spin mr-1" /> Verificando...
+                  </span>
+                ) : (
+                  <span className="text-yellow-600">Aguardando Pagamento</span>
+                )}
+              </span>
+            </div>
+          </div>
+
+          {paymentVerificationCount > 5 &&
+            !paymentCompleted &&
+            !isPaymentBeingVerified && (
+              <div className="w-full p-3 rounded-lg bg-yellow-50 border border-yellow-200 text-sm text-yellow-800 flex items-start">
+                <FaExclamationTriangle className="mt-0.5 mr-2 text-yellow-600 flex-shrink-0" />
+                <p>
+                  Não recebemos a confirmação do seu pagamento ainda. Isso pode
+                  levar alguns instantes dependendo do seu banco. Se você já
+                  realizou o pagamento, aguarde um momento e clique em
+                  "Verificar Pagamento" novamente.
+                </p>
+              </div>
+            )}
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex flex-col md:flex-row gap-4 mt-6">
+        {!paymentCompleted ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setStep(3)}
+              className="py-3 px-6 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            >
+              Voltar e Escolher Outro Método
+            </button>
+
+            <Button
+              onClick={manuallyCheckPixPayment}
+              disabled={isPaymentBeingVerified}
+              className="flex items-center justify-center"
+            >
+              {isPaymentBeingVerified ? (
+                <span className="flex items-center">
+                  <FaSpinner className="animate-spin mr-2" />
+                  Verificando...
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <FaCheck className="mr-2" />
+                  Verificar Pagamento
+                </span>
+              )}
+            </Button>
+          </>
+        ) : (
+          <Button onClick={(e) => handleSubmit(e)} className="w-full">
+            Concluir Pedido
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -289,6 +941,8 @@ const CheckoutPage = () => {
                       label="CPF"
                       value={formData.cpf}
                       onChange={handleFormChange}
+                      placeholder="000.000.000-00"
+                      maxLength={14}
                       required
                     />
                     <InputField
@@ -296,6 +950,8 @@ const CheckoutPage = () => {
                       label="Telefone"
                       value={formData.phone}
                       onChange={handleFormChange}
+                      placeholder="(00) 00000-0000"
+                      maxLength={15}
                       required
                     />
                   </div>
@@ -310,14 +966,45 @@ const CheckoutPage = () => {
                   <FaMapMarkerAlt className="text-blue-500" />
                   Endereço de Entrega
                 </h2>
+
                 <div className="grid gap-6">
-                  <InputField
-                    name="cep"
-                    label="CEP"
-                    value={formData.cep}
-                    onChange={handleFormChange}
-                    required
-                  />
+                  <div className="relative">
+                    <InputField
+                      name="cep"
+                      label="CEP"
+                      value={formData.cep}
+                      onChange={handleFormChange}
+                      placeholder="00000-000"
+                      maxLength={9}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCEPSearch}
+                      disabled={isLoadingCEP || formData.cep.length < 8}
+                      className="absolute right-2 top-9 p-2 text-blue-600 hover:text-blue-800"
+                    >
+                      {isLoadingCEP ? (
+                        <FaSpinner className="animate-spin" />
+                      ) : (
+                        <FaSearch />
+                      )}
+                    </button>
+                  </div>
+
+                  {cepError && (
+                    <p className="text-red-600 text-sm mt-1">{cepError}</p>
+                  )}
+
+                  {isLoadingCEP && (
+                    <div className="flex items-center justify-center py-2">
+                      <FaSpinner className="animate-spin text-blue-600 mr-2" />
+                      <span className="text-blue-600">
+                        Buscando endereço...
+                      </span>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
                       <InputField
@@ -326,6 +1013,7 @@ const CheckoutPage = () => {
                         value={formData.street}
                         onChange={handleFormChange}
                         required
+                        disabled={isLoadingCEP}
                       />
                     </div>
                     <InputField
@@ -341,6 +1029,7 @@ const CheckoutPage = () => {
                     label="Complemento"
                     value={formData.complement}
                     onChange={handleFormChange}
+                    disabled={isLoadingCEP}
                   />
                   <InputField
                     name="neighborhood"
@@ -348,6 +1037,7 @@ const CheckoutPage = () => {
                     value={formData.neighborhood}
                     onChange={handleFormChange}
                     required
+                    disabled={isLoadingCEP}
                   />
                   <div className="grid grid-cols-2 gap-4">
                     <InputField
@@ -356,6 +1046,7 @@ const CheckoutPage = () => {
                       value={formData.city}
                       onChange={handleFormChange}
                       required
+                      disabled={isLoadingCEP}
                     />
                     <InputField
                       name="state"
@@ -363,6 +1054,7 @@ const CheckoutPage = () => {
                       value={formData.state}
                       onChange={handleFormChange}
                       required
+                      disabled={isLoadingCEP}
                     />
                   </div>
                 </div>
@@ -581,117 +1273,7 @@ const CheckoutPage = () => {
             )}
 
             {/* PIX payment step */}
-            {step === 3.5 && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                  <FaQrcode className="text-blue-500" />
-                  Pagamento via PIX
-                </h2>
-
-                {paymentStatus.error && (
-                  <div className="p-4 mb-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-start">
-                      <FaTimes className="text-red-500 mt-0.5 mr-2 flex-shrink-0" />
-                      <p className="text-red-700">{paymentStatus.error}</p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="p-6 bg-blue-50 rounded-lg border border-blue-100">
-                  <div className="flex flex-col items-center space-y-4">
-                    <p className="text-blue-700 font-medium text-center mb-2">
-                      Escaneie o QR Code abaixo ou copie o código PIX:
-                    </p>
-
-                    {/* QR Code */}
-                    <div className="bg-white p-4 border-2 border-blue-200 rounded-lg mb-4">
-                      <div className="w-64 h-64 flex items-center justify-center">
-                        <FaQrcode className="text-8xl text-blue-800" />
-                      </div>
-                    </div>
-
-                    {/* PIX Key */}
-                    <div className="w-full">
-                      <p className="text-sm text-blue-700 mb-1 font-medium">
-                        Código PIX:
-                      </p>
-                      <div className="flex items-center">
-                        <input
-                          type="text"
-                          value={pixCode}
-                          readOnly
-                          className="flex-grow bg-white border border-blue-200 rounded-l-lg py-2 px-3 text-sm"
-                        />
-                        <button
-                          onClick={copyPixCode}
-                          className="bg-blue-600 text-white p-2 rounded-r-lg hover:bg-blue-700"
-                          type="button"
-                        >
-                          <FaCopy />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Payment status */}
-                    <div className="mt-6 w-full p-4 rounded-lg bg-blue-100 border border-blue-200">
-                      <div className="flex items-center justify-between">
-                        <span className="text-blue-800 flex items-center">
-                          <FaRegClock className="mr-2" /> Status:
-                        </span>
-                        <span className="font-medium">
-                          {paymentCompleted ? (
-                            <span className="text-green-600 flex items-center">
-                              <FaCheck className="mr-1" /> Pagamento Confirmado
-                            </span>
-                          ) : (
-                            <span className="text-yellow-600">
-                              Aguardando Pagamento
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex flex-col md:flex-row gap-4 mt-6">
-                  {!paymentCompleted ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => setStep(3)}
-                        className="py-3 px-6 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                      >
-                        Voltar e Escolher Outro Método
-                      </button>
-
-                      <Button
-                        onClick={simulatePixConfirmation}
-                        disabled={paymentStatus.processing}
-                        className="flex items-center justify-center"
-                      >
-                        {paymentStatus.processing ? (
-                          <span className="flex items-center">
-                            <FaSpinner className="animate-spin mr-2" />
-                            Verificando...
-                          </span>
-                        ) : (
-                          <span className="flex items-center">
-                            <FaCheck className="mr-2" />
-                            Já Realizei o Pagamento
-                          </span>
-                        )}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button onClick={(e) => handleSubmit(e)} className="w-full">
-                      Concluir Pedido
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
+            {step === 3.5 && renderPixPaymentSection()}
 
             {step === 4 && (
               <div className="text-center py-8">
@@ -715,7 +1297,7 @@ const CheckoutPage = () => {
                 </p>
 
                 {/* Show specific payment confirmation details based on method */}
-                {formData.paymentMethod === "boleto" && (
+                {formData.paymentMethod === "boleto" && boletoDetails && (
                   <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
                     <h3 className="font-medium text-yellow-800 mb-2 flex items-center justify-center">
                       <FaBarcode className="mr-2" />
@@ -725,25 +1307,45 @@ const CheckoutPage = () => {
                       O boleto foi enviado para seu email e pode ser pago em
                       qualquer agência bancária até a data de vencimento.
                     </p>
-                    <div className="bg-white p-4 rounded-lg mb-4 border border-yellow-200">
-                      <div className="h-16 flex items-center justify-center">
-                        <FaBarcode className="text-4xl text-yellow-800" />
+
+                    {boletoDetails.barCodeImage ? (
+                      <div className="bg-white p-4 rounded-lg mb-4 border border-yellow-200">
+                        <img
+                          src={boletoDetails.barCodeImage}
+                          alt="Código de barras do boleto"
+                          className="h-16 w-full object-contain"
+                        />
                       </div>
-                    </div>
+                    ) : (
+                      <div className="bg-white p-4 rounded-lg mb-4 border border-yellow-200">
+                        <div className="h-16 flex items-center justify-center">
+                          <FaBarcode className="text-4xl text-yellow-800" />
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-2">
                       <p className="text-yellow-700 text-sm font-medium">
                         Vencimento:{" "}
-                        {new Date(
-                          Date.now() + 3 * 24 * 60 * 60 * 1000
-                        ).toLocaleDateString()}
+                        {boletoDetails.dueDate ||
+                          new Date(
+                            Date.now() + 3 * 24 * 60 * 60 * 1000
+                          ).toLocaleDateString()}
                       </p>
                       <p className="text-yellow-700 text-sm font-medium">
                         Valor: R$ {total.toFixed(2)}
                       </p>
                     </div>
-                    <button className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-lg w-full hover:bg-yellow-700">
+
+                    <a
+                      href={boletoDetails.pdfUrl}
+                      download="boleto.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-lg w-full hover:bg-yellow-700 inline-block text-center"
+                    >
                       Download do Boleto
-                    </button>
+                    </a>
                   </div>
                 )}
 
@@ -840,14 +1442,17 @@ const CheckoutPage = () => {
   );
 };
 
-// Componentes auxiliares
-const InputField = ({ label, ...props }) => (
+// Modified InputField component to support disabled state
+const InputField = ({ label, disabled, ...props }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-2">
       {label}
     </label>
     <input
-      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-colors"
+      className={`w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-colors ${
+        disabled ? "bg-gray-100 text-gray-500" : ""
+      }`}
+      disabled={disabled}
       {...props}
     />
   </div>

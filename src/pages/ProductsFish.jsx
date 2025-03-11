@@ -835,10 +835,10 @@ const ProductsFish = () => {
             {paginatedProducts.map((product) => (
               <motion.div
                 key={product.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100"
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
                 whileHover={{ y: -5 }}
               >
-                <div className="relative group">
+                <div className="relative">
                   <img
                     src={product.image}
                     alt={product.name}
@@ -856,62 +856,68 @@ const ProductsFish = () => {
                   )}
                 </div>
 
-                <div className="p-6 flex flex-col h-[280px]">
+                <div className="p-6 flex flex-col flex-grow">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-bold text-gray-800">
+                    <h3 className="text-lg font-bold text-gray-800 line-clamp-2">
                       {product.name}
                     </h3>
-                    <span className="text-sm text-gray-500">
-                      {product.scientificName}
-                    </span>
+                    {product.scientificName && (
+                      <span className="text-xs italic text-gray-500 ml-1">
+                        {product.scientificName}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
                       {product.type === "freshwater"
                         ? "Água Doce"
                         : "Água Salgada"}
                     </span>
-                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
-                      {product.temperament}
-                    </span>
+                    {product.temperament && (
+                      <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                        {product.temperament}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex-grow">
+                  <div className="mb-4 flex-grow">
                     <p className="text-gray-600 text-sm line-clamp-3">
                       {product.description}
                     </p>
                   </div>
 
-                  <div className="flex justify-between items-center mb-4 mt-auto pt-4">
-                    <span className="text-2xl font-bold text-blue-600">
-                      R$ {product.price.toFixed(2)}
-                    </span>
-                    <span
-                      className={`text-sm ${
-                        product.stock > 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {product.stock > 0
-                        ? `${product.stock} em estoque`
-                        : "Indisponível"}
-                    </span>
-                  </div>
+                  <div className="mt-auto">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-2xl font-bold text-blue-600">
+                        R$ {product.price.toFixed(2)}
+                      </span>
+                      <span
+                        className={`text-sm ${
+                          product.stock > 0 ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {product.stock > 0
+                          ? `${product.stock} em estoque`
+                          : "Indisponível"}
+                      </span>
+                    </div>
 
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setSelectedProduct(product)}
-                      className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                    >
-                      Detalhes
-                    </button>
-                    <button
-                      onClick={() => addToCart(product)}
-                      disabled={product.stock === 0}
-                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      <FaShoppingCart /> Comprar
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedProduct(product)}
+                        className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                      >
+                        Detalhes
+                      </button>
+                      <button
+                        onClick={() => addToCart(product)}
+                        disabled={product.stock === 0}
+                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        <FaShoppingCart /> Comprar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -934,11 +940,36 @@ const ProductsFish = () => {
                 {filteredProducts.length} produtos)
               </span>
 
-              <div className="flex flex-wrap justify-center gap-2 mb-4">
+              <div className="inline-flex justify-center items-center gap-2">
+                {/* Previous button */}
+                <button
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                  className={`px-2 py-1 rounded-md ${
+                    currentPage === 1
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
+                  }`}
+                  aria-label="Primeira página"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 010 1.414zm-6 0a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L5.414 10l4.293 4.293a1 1 0 010 1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                  className={`px-3 py-1 rounded-md flex items-center ${
                     currentPage === 1
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                       : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
@@ -948,132 +979,134 @@ const ProductsFish = () => {
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
                   >
                     <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
+                      fillRule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clipRule="evenodd"
                     />
                   </svg>
-                  Anterior
+                  <span className="hidden sm:inline">Anterior</span>
                 </button>
 
-                <div className="hidden sm:flex space-x-1">
-                  {/* First page */}
-                  {currentPage > 2 && (
-                    <button
-                      onClick={() => handlePageChange(1)}
-                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
-                    >
-                      1
-                    </button>
-                  )}
+                {/* Page numbers - Only show on medium screens and up */}
+                <div className="hidden md:flex space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    // Logic to show pages around current page
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      // If 5 or fewer pages, show all
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      // Near start
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      // Near end
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      // In middle
+                      pageNum = currentPage - 2 + i;
+                    }
 
-                  {/* Ellipsis for skipped pages */}
-                  {currentPage > 3 && (
-                    <span className="px-1.5 py-1.5 text-gray-500">...</span>
-                  )}
-
-                  {/* Previous page if not first */}
-                  {currentPage > 1 && (
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
-                    >
-                      {currentPage - 1}
-                    </button>
-                  )}
-
-                  {/* Current page */}
-                  <button
-                    className="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium"
-                    aria-current="page"
-                  >
-                    {currentPage}
-                  </button>
-
-                  {/* Next page if not last */}
-                  {currentPage < totalPages && (
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
-                    >
-                      {currentPage + 1}
-                    </button>
-                  )}
-
-                  {/* Ellipsis for skipped pages */}
-                  {currentPage < totalPages - 2 && (
-                    <span className="px-1.5 py-1.5 text-gray-500">...</span>
-                  )}
-
-                  {/* Last page */}
-                  {currentPage < totalPages - 1 && (
-                    <button
-                      onClick={() => handlePageChange(totalPages)}
-                      className="px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition-all duration-200"
-                    >
-                      {totalPages}
-                    </button>
-                  )}
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                          currentPage === pageNum
+                            ? "bg-blue-600 text-white font-medium"
+                            : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* Mobile pagination with current/total */}
-                <div className="flex sm:hidden items-center px-3 py-1.5 bg-gray-100 rounded-lg">
-                  <span className="text-gray-600 text-sm font-medium">
-                    {currentPage} / {totalPages}
-                  </span>
-                </div>
+                {/* Current page indicator on small screens */}
+                <span className="md:hidden px-3 py-1 bg-blue-600 text-white rounded-md">
+                  {currentPage}
+                </span>
 
+                {/* Next button */}
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className={`px-3 py-1.5 rounded-lg flex items-center transition-all duration-200 ${
+                  className={`px-3 py-1 rounded-md flex items-center ${
                     currentPage === totalPages
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                       : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
                   }`}
                   aria-label="Próxima página"
                 >
-                  Próxima
+                  <span className="hidden sm:inline">Próxima</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 ml-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
                   >
                     <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
+                      fillRule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className={`px-2 py-1 rounded-md ${
+                    currentPage === totalPages
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white"
+                  }`}
+                  aria-label="Última página"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </button>
               </div>
 
-              {/* Jump to page for larger screens */}
-              {totalPages > 3 && (
-                <div className="hidden md:flex items-center gap-2 mt-2">
-                  <span className="text-sm text-gray-600">Ir para:</span>
+              {/* Jump to page dropdown - Only on medium+ screens */}
+              {totalPages > 5 && (
+                <div className="hidden md:flex items-center gap-2 mt-4">
+                  <label
+                    htmlFor="page-select"
+                    className="text-sm text-gray-600"
+                  >
+                    Ir para página:
+                  </label>
                   <select
+                    id="page-select"
                     className="bg-white border border-gray-300 text-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={currentPage}
                     onChange={(e) => handlePageChange(Number(e.target.value))}
-                    aria-label="Selecionar página"
                   >
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => (
-                        <option key={page} value={page}>
-                          {page}
-                        </option>
-                      )
-                    )}
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        {i + 1}
+                      </option>
+                    ))}
                   </select>
                 </div>
               )}
