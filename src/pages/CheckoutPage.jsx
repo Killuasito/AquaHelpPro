@@ -1384,51 +1384,74 @@ const CheckoutPage = () => {
             transition={{ duration: 0.5 }}
             className="lg:w-96"
           >
-            <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24">
-              <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <FaShoppingCart className="text-blue-500" />
-                Resumo do Pedido
-              </h3>
+            <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24 divide-y divide-gray-100">
+              <div className="pb-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <FaShoppingCart className="text-blue-500" />
+                  Resumo do Pedido
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {cartItems.length} {cartItems.length === 1 ? "item" : "itens"}{" "}
+                  no carrinho
+                </p>
+              </div>
 
-              <div className="space-y-4">
+              <div className="py-4 space-y-4">
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-4 py-3 border-b"
+                    className="flex items-center gap-4 p-2 rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    <div className="w-12 h-12 rounded-lg overflow-hidden">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
                       <img
                         src={item.image}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="flex-grow">
-                      <p className="font-medium text-gray-800">{item.name}</p>
-                      <p className="text-sm text-gray-500">
-                        Qtd: {item.quantity}
+                    <div className="flex-grow min-w-0">
+                      <p className="font-medium text-gray-800 truncate">
+                        {item.name}
                       </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          Qtd: {item.quantity}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          R$ {item.price.toFixed(2)} un
+                        </span>
+                      </div>
                     </div>
-                    <p className="font-medium text-gray-800">
+                    <p className="font-medium text-gray-800 whitespace-nowrap">
                       R$ {(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 ))}
+              </div>
 
-                <div className="pt-4 space-y-3">
-                  <div className="flex justify-between text-gray-600">
-                    <span>Subtotal</span>
-                    <span>R$ {total.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600">
-                    <span>Frete</span>
-                    <span className="text-green-600">Grátis</span>
-                  </div>
-                  <div className="border-t border-gray-200 pt-3 mt-3">
-                    <div className="flex justify-between text-lg font-bold">
-                      <span>Total</span>
-                      <span className="text-blue-600">
+              <div className="pt-4 space-y-3">
+                <div className="flex justify-between text-gray-600 text-sm">
+                  <span>Subtotal</span>
+                  <span className="font-medium">R$ {total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600 text-sm">
+                  <span>Frete</span>
+                  <span className="inline-flex items-center gap-1 text-green-600 font-medium">
+                    <FaTruck className="text-xs" />
+                    Grátis
+                  </span>
+                </div>
+                <div className="pt-3 mt-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-gray-800">
+                      Total
+                    </span>
+                    <div className="text-right">
+                      <span className="block text-2xl font-bold text-blue-600">
                         R$ {total.toFixed(2)}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        em até 12x sem juros
                       </span>
                     </div>
                   </div>

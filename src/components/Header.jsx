@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaHome,
@@ -19,6 +19,8 @@ import {
   FaBox,
   FaArrowRight,
   FaChevronRight,
+  FaSearch,
+  FaClock,
 } from "react-icons/fa";
 import { CartContext } from "../contexts/CartContext";
 
@@ -30,8 +32,15 @@ const Header = () => {
   const [productsOpen, setProductsOpen] = useState(false);
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [recentSearches, setRecentSearches] = useState(() => {
+    const saved = localStorage.getItem('recentSearches');
+    return saved ? JSON.parse(saved) : [];
+  });
   const location = useLocation();
   const { cartItems } = useContext(CartContext);
+  const navigate = useNavigate();
 
   // Updated navItems to include products dropdown
   const navItems = [
@@ -139,18 +148,51 @@ const Header = () => {
     }
   };
 
-  // Render dropdown menu for desktop
+  const handleSearch = (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    if (searchQuery.trim()) {
+      // Add to recent searches
+      const newRecentSearches = [
+        searchQuery,
+        ...recentSearches.filter(s => s !== searchQuery)
+      ].slice(0, 5); // Keep only last 5 searches
+      
+      setRecentSearches(newRecentSearches);
+      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+
+      // Navigate to search page
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem('recentSearches');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // Update the renderDropdown function
   const renderDropdown = (item, index) => (
-    <div className="relative">
+    <div className="relative group">
       <button
-        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+        className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200
+        ${
           isPathActive(item)
             ? scrolled
-              ? "bg-blue-100 text-blue-800"
-              : "bg-white/20 text-white"
+              ? "bg-blue-50 text-blue-600"
+              : "bg-white/10 text-white"
             : scrolled
-            ? "hover:bg-blue-50 text-blue-700"
-            : "hover:bg-white/10 text-white"
+            ? "text-gray-600 hover:bg-gray-50"
+            : "text-white/90 hover:bg-white/10"
         }`}
         onMouseEnter={() =>
           handleDropdownInteraction(item.dropdownType, index, "enter")
@@ -161,15 +203,12 @@ const Header = () => {
         onClick={() =>
           handleDropdownInteraction(item.dropdownType, index, "click")
         }
-        aria-expanded={
-          (item.dropdownType === "resources" && resourcesOpen) ||
-          (item.dropdownType === "products" && productsOpen)
-        }
       >
-        <span className="text-lg">{item.icon}</span>
+        <span className="text-lg mr-2">{item.icon}</span>
         <span className="font-medium">{item.text}</span>
         <FaChevronDown
-          className={`ml-1 text-xs opacity-70 transition-transform ${
+          className={`ml-2 text-xs transition-transform duration-200
+          ${
             (item.dropdownType === "resources" && resourcesOpen) ||
             (item.dropdownType === "products" && productsOpen)
               ? "rotate-180"
@@ -182,13 +221,13 @@ const Header = () => {
         {((item.dropdownType === "resources" && resourcesOpen) ||
           (item.dropdownType === "products" && productsOpen)) && (
           <motion.div
-            className={`absolute top-full left-0 mt-1 w-64 rounded-md shadow-lg overflow-hidden z-20 ${
-              scrolled ? "bg-white" : "bg-blue-700"
-            }`}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            className={`absolute top-full left-0 mt-2 w-72 rounded-xl overflow-hidden z-20 shadow-lg
+            ${scrolled ? "bg-white" : "bg-blue-700/95 backdrop-blur-sm"}
+            border ${scrolled ? "border-gray-100" : "border-blue-600"}`}
+            initial={{ opacity: 0, y: -8, scaleY: 0.95 }}
+            animate={{ opacity: 1, y: 0, scaleY: 1 }}
+            exit={{ opacity: 0, y: -8, scaleY: 0.95 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
             onMouseEnter={() =>
               handleDropdownInteraction(item.dropdownType, index, "enter")
             }
@@ -196,26 +235,72 @@ const Header = () => {
               handleDropdownInteraction(item.dropdownType, index, "leave")
             }
           >
-            <div className="py-1">
+            <div className="py-2">
               {item.submenu.map((subItem, subIndex) => (
                 <Link
-                  key={subIndex}
+                  key={`submenu-${item.dropdownType}-${subItem.path}`}
                   to={subItem.path}
-                  className={`block px-4 py-2 ${
+                  className={`group flex items-center gap-3 px-4 py-2.5 transition-colors
+                  ${
                     location.pathname === subItem.path
                       ? scrolled
-                        ? "bg-blue-50 text-blue-700"
-                        : "bg-blue-600 text-white"
+                        ? "bg-blue-50 text-blue-600"
+                        : "bg-blue-600/50 text-white"
                       : scrolled
-                      ? "text-gray-700 hover:bg-blue-50"
-                      : "text-white hover:bg-blue-600"
-                  } flex items-center space-x-2`}
+                      ? "text-gray-600 hover:bg-gray-50"
+                      : "text-white/90 hover:bg-blue-600/50"
+                  }`}
                 >
-                  <span className="text-sm">{subItem.icon}</span>
-                  <span>{subItem.text}</span>
+                  <span
+                    className={`text-lg transition-transform duration-200 group-hover:scale-110
+                    ${
+                      location.pathname === subItem.path
+                        ? scrolled
+                          ? "text-blue-500"
+                          : "text-blue-200"
+                        : scrolled
+                        ? "text-blue-400"
+                        : "text-blue-300"
+                    }`}
+                  >
+                    {subItem.icon}
+                  </span>
+                  <div className="flex-1">
+                    <span className="block font-medium">{subItem.text}</span>
+                    {subItem.description && (
+                      <span
+                        className={`block text-xs mt-0.5
+                      ${scrolled ? "text-gray-400" : "text-blue-200"}`}
+                      >
+                        {subItem.description}
+                      </span>
+                    )}
+                  </div>
+                  <motion.span
+                    className={`text-sm opacity-0 group-hover:opacity-100 transition-opacity
+                    ${scrolled ? "text-blue-400" : "text-blue-300"}`}
+                    initial={{ x: -4 }}
+                    animate={{ x: 0 }}
+                  >
+                    <FaChevronRight />
+                  </motion.span>
                 </Link>
               ))}
             </div>
+
+            {/* Optional: Footer with additional info or quick links */}
+            {item.footerContent && (
+              <div
+                className={`p-3 text-xs border-t
+              ${
+                scrolled
+                  ? "border-gray-100 bg-gray-50 text-gray-500"
+                  : "border-blue-600/50 bg-blue-800/50 text-blue-200"
+              }`}
+              >
+                {item.footerContent}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -235,175 +320,337 @@ const Header = () => {
     };
   }, [mobileMenuOpen]);
 
+  // Add click outside handler for search bar
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchOpen && !event.target.closest(".search-container")) {
+        setSearchOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [searchOpen]);
+
   return (
-    <motion.header
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white text-blue-600 shadow-lg py-2"
-          : "bg-gradient-to-r from-blue-600 to-blue-500 text-white py-4"
-      }`}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-        {/* Logo section */}
-        <Link to="/">
-          <motion.div
-            className="flex items-center space-x-2 group"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <div
-              className={`rounded-full p-2 ${
-                scrolled ? "bg-blue-100" : "bg-white/20"
-              }`}
-            >
-              <FaFish
-                className={`text-2xl ${
-                  scrolled ? "text-blue-600" : "text-white"
-                }`}
-              />
-            </div>
-            <div>
-              <h1
-                className={`text-xl md:text-2xl font-bold tracking-tight ${
-                  scrolled ? "text-blue-600" : "text-white"
-                }`}
+    <>
+      <motion.header
+        className={`fixed w-full top-0 z-50 transition-colors duration-300 ${
+          scrolled
+            ? "bg-white shadow-md py-2"
+            : "bg-gradient-to-r from-blue-800 to-blue-600 py-3"
+        }`}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
+            {/* Logo Section */}
+            <Link to="/" className="flex-shrink-0">
+              <motion.div
+                className="flex items-center space-x-3"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 400 }}
               >
-                Aquasferium
-              </h1>
-              <div className="hidden md:block">
-                <p
-                  className={`text-xs ${
-                    scrolled ? "text-blue-500" : "text-blue-100"
+                <div
+                  className={`rounded-lg p-2.5 ${
+                    scrolled ? "bg-blue-50" : "bg-white/10"
                   }`}
                 >
-                  Gerenciamento profissional de aquários
-                </p>
+                  <FaFish
+                    className={`text-2xl transform -rotate-12 ${
+                      scrolled ? "text-blue-600" : "text-white"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <h1
+                    className={`text-xl font-bold tracking-tight ${
+                      scrolled ? "text-gray-800" : "text-white"
+                    }`}
+                  >
+                    Aquasferium
+                  </h1>
+                  <p
+                    className={`text-xs font-medium ${
+                      scrolled ? "text-gray-500" : "text-blue-100"
+                    }`}
+                  >
+                    Aquarismo Profissional
+                  </p>
+                </div>
+              </motion.div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-1">
+              <ul className="flex items-center space-x-1">
+                {navItems.map((item, index) => {
+                  const isActive = isPathActive(item);
+
+                  if (item.path) {
+                    return (
+                      <motion.li key={`nav-${item.path}`} className="relative">
+                        <Link
+                          to={item.path}
+                          className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200
+                            ${
+                              isActive
+                                ? scrolled
+                                  ? "bg-blue-50 text-blue-600"
+                                  : "bg-white/10 text-white"
+                                : scrolled
+                                ? "text-gray-600 hover:bg-gray-50"
+                                : "text-white/90 hover:bg-white/10"
+                            }`}
+                        >
+                          <span className="text-lg mr-2">{item.icon}</span>
+                          <span className="font-medium">{item.text}</span>
+                        </Link>
+                        {isActive && (
+                          <motion.div
+                            layoutId="navIndicator"
+                            className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
+                              scrolled ? "bg-blue-600" : "bg-white"
+                            }`}
+                            initial={false}
+                            transition={{
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 30,
+                            }}
+                          />
+                        )}
+                      </motion.li>
+                    );
+                  }
+
+                  return item.hasDropdown ? (
+                    <motion.li key={`dropdown-${item.dropdownType}`}>
+                      {renderDropdown(item, index)}
+                    </motion.li>
+                  ) : null;
+                })}
+              </ul>
+
+              {/* Search Icon */}
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className={`relative p-2.5 rounded-lg transition-all duration-200 
+                  ${
+                    scrolled
+                      ? "text-gray-600 hover:bg-gray-50"
+                      : "text-white hover:bg-white/10"
+                  }`}
+              >
+                <FaSearch className="text-xl" />
+              </button>
+
+              {/* Cart Icon */}
+              <Link
+                to="/cart"
+                className={`relative ml-4 p-2.5 rounded-lg transition-all duration-200 
+                  ${
+                    scrolled
+                      ? "text-gray-600 hover:bg-gray-50"
+                      : "text-white hover:bg-white/10"
+                  }`}
+              >
+                <FaShoppingCart className="text-xl" />
+                {cartItems.length > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center"
+                  >
+                    {cartItems.length}
+                  </motion.span>
+                )}
+              </Link>
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <div className="flex items-center lg:hidden space-x-4">
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className={`p-2 rounded-lg ${
+                  scrolled
+                    ? "text-gray-600 hover:bg-gray-50"
+                    : "text-white hover:bg-white/10"
+                }`}
+              >
+                <FaSearch className="text-xl" />
+              </button>
+              <Link
+                to="/cart"
+                className={`relative p-2 rounded-lg ${
+                  scrolled
+                    ? "text-gray-600 hover:bg-gray-50"
+                    : "text-white hover:bg-white/10"
+                }`}
+              >
+                <FaShoppingCart className="text-xl" />
+                {cartItems.length > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center"
+                  >
+                    {cartItems.length}
+                  </motion.span>
+                )}
+              </Link>
+
+              <motion.button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className={`p-2 rounded-lg ${
+                  scrolled
+                    ? "text-gray-600 hover:bg-gray-50"
+                    : "text-white hover:bg-white/10"
+                }`}
+                whileTap={{ scale: 0.95 }}
+              >
+                {mobileMenuOpen ? (
+                  <FaTimes className="text-xl" />
+                ) : (
+                  <FaBars className="text-xl" />
+                )}
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.header>
+
+      {/* Search Bar */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-16 inset-x-0 z-40 search-container
+              ${
+                scrolled
+                  ? "bg-white shadow-lg"
+                  : "bg-blue-700/95 backdrop-blur-sm"
+              }`}
+          >
+            <div className="max-w-3xl mx-auto px-4 py-4">
+              <form onSubmit={handleSearch} className="relative">
+                <FaSearch
+                  className={`absolute left-4 top-1/2 transform -translate-y-1/2 
+                  ${scrolled ? "text-gray-400" : "text-blue-300"}`}
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Buscar produtos, espécies, guias..."
+                  className={`w-full pl-12 pr-24 py-3 rounded-xl outline-none transition-colors
+                    ${
+                      scrolled
+                        ? "bg-gray-100 focus:bg-gray-50 text-gray-900"
+                        : "bg-blue-800/50 focus:bg-blue-800/70 text-white placeholder-blue-300"
+                    }`}
+                  autoFocus
+                />
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+                  <button
+                    type="submit"
+                    className={`px-4 py-1.5 rounded-lg transition-colors
+                      ${
+                        scrolled
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-white/10 text-white hover:bg-white/20"
+                      }`}
+                  >
+                    Pesquisar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(false)}
+                    className={`p-1.5 rounded-full
+                      ${
+                        scrolled
+                          ? "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                          : "text-blue-300 hover:text-white hover:bg-blue-800/50"
+                      }`}
+                  >
+                    <FaTimes className="text-lg" />
+                  </button>
+                </div>
+              </form>
+
+              {/* Search Suggestions */}
+              <div className="mt-4">
+                {recentSearches.length > 0 && (
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className={`text-sm font-medium ${
+                        scrolled ? "text-gray-500" : "text-blue-200"
+                      }`}>
+                        Buscas Recentes
+                      </h3>
+                      <button
+                        onClick={clearRecentSearches}
+                        className={`text-xs ${
+                          scrolled 
+                            ? "text-gray-400 hover:text-gray-600" 
+                            : "text-blue-300 hover:text-white"
+                        }`}
+                      >
+                        Limpar histórico
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {recentSearches.map((search, index) => (
+                        <button
+                          key={`recent-${search}-${index}`}
+                          onClick={() => {
+                            setSearchQuery(search);
+                            setTimeout(() => handleSearch(), 0);
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition-colors
+                            ${
+                              scrolled
+                                ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                : "bg-blue-800/50 text-white hover:bg-blue-800/70"
+                            }`}
+                        >
+                          <FaClock className={scrolled ? "text-gray-400" : "text-blue-300"} />
+                          {search}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
-        </Link>
+        )}
+      </AnimatePresence>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:block">
-          <ul className="flex items-center space-x-1">
-            {navItems.map((item, index) => {
-              const isActive = isPathActive(item);
-
-              return (
-                <motion.li key={index} className="relative">
-                  {item.path ? (
-                    <Link
-                      to={item.path}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
-                        isActive
-                          ? scrolled
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-white/20 text-white"
-                          : scrolled
-                          ? "hover:bg-blue-50 text-blue-700"
-                          : "hover:bg-white/10 text-white"
-                      }`}
-                      onMouseEnter={() => setHoveredItem(index)}
-                      onMouseLeave={() => setHoveredItem(null)}
-                    >
-                      <span className="text-lg">{item.icon}</span>
-                      <span className="font-medium">{item.text}</span>
-                    </Link>
-                  ) : item.hasDropdown ? (
-                    renderDropdown(item, index)
-                  ) : null}
-
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeNavIndicator"
-                      className={`h-1 w-full absolute bottom-0 rounded-full ${
-                        scrolled ? "bg-blue-600" : "bg-white"
-                      }`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  )}
-                </motion.li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* Desktop Cart Icon */}
-        <div className="hidden lg:flex items-center">
-          <Link
-            to="/cart"
-            className="relative p-2 rounded-lg transition-all duration-200 hover:bg-blue-50 hover:text-blue-500"
-            aria-label="Carrinho de compras"
-          >
-            <FaShoppingCart className="text-2xl" />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                {cartItems.length}
-              </span>
-            )}
-          </Link>
-        </div>
-
-        {/* Mobile Controls */}
-        <div className="flex items-center gap-3 lg:hidden">
-          {/* Cart Icon for Mobile */}
-          <Link
-            to="/cart"
-            className="relative p-2 rounded-full hover:bg-white/10 transition-colors"
-            aria-label="Carrinho de compras"
-          >
-            <FaShoppingCart className="text-2xl" />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                {cartItems.length}
-              </span>
-            )}
-          </Link>
-
-          {/* Mobile Menu Button */}
-          <motion.button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            whileTap={{ scale: 0.9 }}
-            className={`p-2 rounded-full transition-colors ${
-              scrolled
-                ? "hover:bg-blue-100 text-blue-600"
-                : "hover:bg-white/10 text-white"
-            }`}
-            aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-          </motion.button>
-        </div>
-      </div>
-
-      {/* New Mobile Menu - Slide from right */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
-            {/* Backdrop/Overlay */}
             <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
               onClick={() => setMobileMenuOpen(false)}
             />
 
-            {/* Side Panel Menu */}
             <motion.div
-              className={`fixed top-0 right-0 h-full w-80 max-w-full z-50 lg:hidden overflow-y-auto
-                ${scrolled ? "bg-white" : "bg-blue-700"} shadow-2xl`}
-              initial={{ x: "100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "100%", opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 30 }}
+              className={`fixed top-0 right-0 w-72 h-full overflow-y-auto z-50 lg:hidden
+                ${scrolled ? "bg-white" : "bg-blue-800"}`}
             >
               <div className="p-4 flex flex-col h-full">
                 {/* Header & Close Button */}
@@ -452,7 +699,7 @@ const Header = () => {
 
                       if (item.path) {
                         return (
-                          <li key={index}>
+                          <li key={`mobile-nav-${item.path}`}>
                             <Link
                               to={item.path}
                               onClick={() => setMobileMenuOpen(false)}
@@ -504,7 +751,7 @@ const Header = () => {
                           mobileProductsOpen);
 
                       return (
-                        <li key={index}>
+                        <li key={`mobile-dropdown-${item.dropdownType}`}>
                           <div className="mb-1">
                             <button
                               onClick={() => {
@@ -571,7 +818,7 @@ const Header = () => {
                                     location.pathname === subItem.path;
                                   return (
                                     <motion.li
-                                      key={subIndex}
+                                      key={`mobile-submenu-${item.dropdownType}-${subItem.path}`}
                                       initial={{ opacity: 0, x: -10 }}
                                       animate={{ opacity: 1, x: 0 }}
                                       transition={{ delay: subIndex * 0.1 }}
@@ -651,7 +898,7 @@ const Header = () => {
           </>
         )}
       </AnimatePresence>
-    </motion.header>
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartContext } from "../contexts/CartContext";
 import {
@@ -20,6 +21,8 @@ import {
 import ProductDetail from "../components/ProductDetail";
 
 const ProductsEquipment = () => {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,7 +69,7 @@ const ProductsEquipment = () => {
       ],
     },
     {
-      id: 203,
+      id: 205,
       name: "Termostato 25W",
       type: "other",
       price: 69.9,
@@ -178,6 +181,16 @@ const ProductsEquipment = () => {
       ],
     },
   ];
+
+  // Adicione este useEffect para abrir o modal quando receber o ID via URL
+  useEffect(() => {
+    if (productId) {
+      const product = equipmentProducts.find((p) => p.id === Number(productId));
+      if (product) {
+        setSelectedProduct(product);
+      }
+    }
+  }, [productId]);
 
   // Filter products based on search term and filter type
   const filteredProducts = equipmentProducts.filter((product) => {

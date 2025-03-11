@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartContext } from "../contexts/CartContext";
 import {
@@ -20,6 +21,8 @@ import {
 import ProductDetail from "../components/ProductDetail";
 
 const ProductsPlants = () => {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,7 +67,7 @@ const ProductsPlants = () => {
 
   const plantProducts = [
     {
-      id: 101,
+      id: 101, // Using same ID as in Search.jsx
       name: "Anúbia Nana",
       type: "foreground",
       price: 29.9,
@@ -88,6 +91,16 @@ const ProductsPlants = () => {
     },
     // Adicione mais produtos aqui
   ];
+
+  // Add effect to handle URL product selection
+  useEffect(() => {
+    if (productId) {
+      const product = plantProducts.find((p) => p.id === Number(productId));
+      if (product) {
+        setSelectedProduct(product);
+      }
+    }
+  }, [productId]);
 
   // Filter products based on search term and filter type
   const filteredProducts = plantProducts.filter((product) => {

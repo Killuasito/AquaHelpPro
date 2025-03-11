@@ -16,8 +16,12 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import ProductDetail from "../components/ProductDetail";
+import { useSearchParams } from "react-router-dom";
 
 const ProductsFish = () => {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -133,7 +137,7 @@ const ProductsFish = () => {
     },
     {
       id: 5,
-      name: "Corydoras",
+      name: "Corydora Bronze",
       scientificName: "Corydoras spp.",
       type: "freshwater",
       price: 18.5,
@@ -661,6 +665,16 @@ const ProductsFish = () => {
     },
     // Adicione mais produtos aqui
   ];
+
+  useEffect(() => {
+    if (productId) {
+      // Encontrar o produto específico
+      const product = fishProducts.find((p) => p.id === Number(productId));
+      if (product) {
+        setSelectedProduct(product);
+      }
+    }
+  }, [productId]);
 
   // Filter products based on search term and filter type
   const filteredProducts = fishProducts.filter((product) => {

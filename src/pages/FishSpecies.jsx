@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
@@ -12,16 +12,22 @@ import {
   FaFlask,
   FaWater,
 } from "react-icons/fa";
+import { useSearchParams } from "react-router-dom";
 
 const FishSpecies = () => {
+  const [searchParams] = useSearchParams();
+  const speciesId = searchParams.get("id");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFish, setSelectedFish] = useState(null);
   const itemsPerPage = 12; // Changed from 24 to 12
 
+  // Update fishData to include IDs
   const fishData = [
     {
+      id: 301, // Using 300+ range for species IDs
       name: "Betta Splendens",
       scientificName: "Betta splendens",
       image:
@@ -39,6 +45,7 @@ const FishSpecies = () => {
         "Conhecido por suas nadadeiras longas e coloridas. Machos são territoriais e não devem ser mantidos juntos.",
     },
     {
+      id: 302,
       name: "Tetra Neon",
       scientificName: "Paracheirodon innesi",
       image:
@@ -56,6 +63,7 @@ const FishSpecies = () => {
         "Pequeno e colorido com listras azuis e vermelhas. Deve ser mantido em grupos de pelo menos 6 indivíduos.",
     },
     {
+      id: 303,
       name: "Guppy",
       scientificName: "Poecilia reticulata",
       image:
@@ -73,6 +81,7 @@ const FishSpecies = () => {
         "Conhecido por suas cores vibrantes e fácil reprodução. Ideal para iniciantes.",
     },
     {
+      id: 304,
       name: "Acará Disco",
       scientificName: "Symphysodon spp.",
       image:
@@ -90,6 +99,7 @@ const FishSpecies = () => {
         "Peixe majestoso em forma de disco. Requer experiência em aquarismo pois é sensível à qualidade da água.",
     },
     {
+      id: 305,
       name: "Peixe-palhaço",
       scientificName: "Amphiprion ocellaris",
       image:
@@ -107,6 +117,7 @@ const FishSpecies = () => {
         "Popularizado pelo filme 'Procurando Nemo'. Vive em simbiose com anêmonas-do-mar.",
     },
     {
+      id: 306,
       name: "Cirurgião-patela",
       scientificName: "Paracanthurus hepatus",
       image: "https://petfriends.com.br/wp-content/uploads/2016/12/dory.png",
@@ -123,6 +134,7 @@ const FishSpecies = () => {
         "Conhecido como 'Dory' do filme 'Procurando Nemo'. Possui coloração azul vibrante e requer aquário espaçoso.",
     },
     {
+      id: 307,
       name: "Arraia Motoro",
       scientificName: "Potamotrygon motoro",
       image:
@@ -140,6 +152,7 @@ const FishSpecies = () => {
         "Arraia de água doce com padrões circulares no dorso. Requer aquário espaçoso e substrato fino.",
     },
     {
+      id: 308,
       name: "Camarão Red Cherry",
       scientificName: "Neocaridina davidi",
       image:
@@ -157,6 +170,7 @@ const FishSpecies = () => {
         "Pequeno camarão vermelho popular em aquários plantados. Excelente limpador de algas.",
     },
     {
+      id: 309,
       name: "Caramujo Nerita",
       scientificName: "Neritina natalensis",
       image:
@@ -174,6 +188,7 @@ const FishSpecies = () => {
         "Excelente limpador de aquário, remove algas das superfícies sem danificar plantas.",
     },
     {
+      id: 310,
       name: "Caranguejo Ermitão",
       scientificName: "Coenobita spp.",
       image: "https://monomito.org/wp-content/uploads/paguro-1.jpg",
@@ -190,6 +205,7 @@ const FishSpecies = () => {
         "Crustáceo que usa conchas vazias como proteção. Excelente para limpeza do substrato.",
     },
     {
+      id: 311,
       name: "Cavalo-Marinho",
       scientificName: "Hippocampus reidi",
       image:
@@ -207,6 +223,7 @@ const FishSpecies = () => {
         "Peixe exótico com anatomia única. Requer cuidados especiais e alimentação específica.",
     },
     {
+      id: 312,
       name: "Pleco Real",
       scientificName: "Panaque nigrolineatus",
       image:
@@ -224,6 +241,7 @@ const FishSpecies = () => {
         "Peixe conhecido por seu padrão dourado e preto. Necessita de madeira em sua dieta.",
     },
     {
+      id: 313,
       name: "Coral Xênia",
       scientificName: "Xenia sp.",
       image:
@@ -241,6 +259,7 @@ const FishSpecies = () => {
         "Coral pulsante de crescimento rápido. Ideal para aquaristas iniciantes em corais.",
     },
     {
+      id: 314,
       name: "Carangueijo Azul",
       scientificName: "Cardisoma guanhumi",
       image:
@@ -258,6 +277,7 @@ const FishSpecies = () => {
         "Caranguejo terrestre que necessita de área seca no aquário. Coloração azulada impressionante.",
     },
     {
+      id: 315,
       name: "Anêmona Bubble Tip",
       scientificName: "Entacmaea quadricolor",
       image:
@@ -275,6 +295,7 @@ const FishSpecies = () => {
         "Anêmona popular para symbiose com peixes-palhaço. Requer iluminação intensa.",
     },
     {
+      id: 316,
       name: "Ouriço-do-mar",
       scientificName: "Lytechinus variegatus",
       image:
@@ -292,6 +313,7 @@ const FishSpecies = () => {
         "Excelente controlador de algas. Cuidado com seus espinhos durante manutenção.",
     },
     {
+      id: 317,
       name: "Molinésia",
       scientificName: "Poecilia sphenops",
       image:
@@ -309,6 +331,7 @@ const FishSpecies = () => {
         "Peixe resistente e colorido, ideal para iniciantes. Prefere águas levemente alcalinas.",
     },
     {
+      id: 318,
       name: "Camarão Arlequim",
       scientificName: "Hymenocera picta",
       image:
@@ -326,6 +349,7 @@ const FishSpecies = () => {
         "Camarão colorido e exótico. Especializado em se alimentar de estrelas-do-mar.",
     },
     {
+      id: 319,
       name: "Plati",
       scientificName: "Xiphophorus maculatus",
       image:
@@ -343,6 +367,7 @@ const FishSpecies = () => {
         "Peixe pequeno e colorido, ideal para aquários comunitários. Fácil reprodução.",
     },
     {
+      id: 320,
       name: "Kinguio",
       scientificName: "Carassius auratus",
       image:
@@ -360,6 +385,7 @@ const FishSpecies = () => {
         "Peixe ornamental popular com diversas variedades de cores e formas. Requer boa filtragem devido à alta produção de resíduos.",
     },
     {
+      id: 321,
       name: "Cascudo Ancistrus",
       scientificName: "Ancistrus cirrhosus",
       image:
@@ -377,6 +403,7 @@ const FishSpecies = () => {
         "Peixe limpador excelente para controle de algas. Mais adequado para aquários que kinguios maiores.",
     },
     {
+      id: 322,
       name: "Camarão Amano",
       scientificName: "Caridina multidentata",
       image:
@@ -394,6 +421,7 @@ const FishSpecies = () => {
         "Um dos melhores limpadores de aquário, especialmente eficaz contra algas.",
     },
     {
+      id: 323,
       name: "Apistograma Ramirezi",
       scientificName: "Mikrogeophagus ramirezi",
       image:
@@ -411,6 +439,7 @@ const FishSpecies = () => {
         "Ciclídeo anão colorido, ideal para aquários plantados. Forma casais monogâmicos.",
     },
     {
+      id: 324,
       name: "Killifish",
       scientificName: "Aphyosemion australe",
       image:
@@ -429,6 +458,7 @@ const FishSpecies = () => {
     },
     // Novas espécies de água doce
     {
+      id: 325,
       name: "Peixe-Borboleta",
       scientificName: "Pantodon buchholzi",
       image:
@@ -446,6 +476,7 @@ const FishSpecies = () => {
         "Possui nadadeiras peitorais semelhantes a asas de borboleta. Capaz de saltar fora d'água para capturar insetos.",
     },
     {
+      id: 326,
       name: "Acará Bandeira",
       scientificName: "Pterophyllum scalare",
       image: "https://www.baseflora.com/img/article/0011-1.jpg",
@@ -462,6 +493,7 @@ const FishSpecies = () => {
         "Peixe elegante de formato triangular. Prefere aquários altos com plantas e troncos.",
     },
     {
+      id: 327,
       name: "Barbo Tigre",
       scientificName: "Puntigrus tetrazona",
       image:
@@ -479,6 +511,7 @@ const FishSpecies = () => {
         "Reconhecível por suas listras pretas. Deve ser mantido em grupos de no mínimo 6 indivíduos.",
     },
     {
+      id: 328,
       name: "Tetras Sangue",
       scientificName: "Hyphessobrycon eques",
       image: "https://gruposarlo.com.br/wp-content/uploads/2022/01/S35736.jpg",
@@ -495,6 +528,7 @@ const FishSpecies = () => {
         "Pequeno peixe de coloração vermelha intensa. Ideal para aquários comunitários.",
     },
     {
+      id: 329,
       name: "Peixe Colisa",
       scientificName: "Trichogaster lalius",
       image:
@@ -512,6 +546,7 @@ const FishSpecies = () => {
         "Também conhecido como gourami anão, possui cores vibrantes e constrói ninhos de bolhas.",
     },
     {
+      id: 330,
       name: "Corydora Bronze",
       scientificName: "Corydoras aeneus",
       image:
@@ -529,6 +564,7 @@ const FishSpecies = () => {
         "Peixe de fundo que ajuda a manter o substrato limpo. Deve ser mantido em grupos.",
     },
     {
+      id: 331,
       name: "Danio Zebra",
       scientificName: "Danio rerio",
       image:
@@ -546,6 +582,7 @@ const FishSpecies = () => {
         "Pequeno peixe listrado muito ativo. Ideal para iniciantes e aquários comunitários.",
     },
     {
+      id: 332,
       name: "Peixe Arco-Íris",
       scientificName: "Melanotaenia boesemani",
       image:
@@ -563,6 +600,7 @@ const FishSpecies = () => {
         "Coloração impressionante que muda com a luz. Precisa de espaço para natação em cardume.",
     },
     {
+      id: 333,
       name: "Botia Palhaço",
       scientificName: "Chromobotia macracanthus",
       image:
@@ -581,6 +619,7 @@ const FishSpecies = () => {
     },
     // Novas espécies de água salgada
     {
+      id: 334,
       name: "Peixe-Anjo Imperador",
       scientificName: "Pomacanthus imperator",
       image:
@@ -598,6 +637,7 @@ const FishSpecies = () => {
         "Um dos mais belos peixes marinhos, com listras azuis e amarelas. Juvenis têm coloração diferente dos adultos.",
     },
     {
+      id: 335,
       name: "Cirurgião Yellow Tang",
       scientificName: "Zebrasoma flavescens",
       image:
@@ -615,6 +655,7 @@ const FishSpecies = () => {
         "Peixe amarelo vibrante muito popular em aquários marinhos. Excelente controlador de algas.",
     },
     {
+      id: 336,
       name: "Góbio Mandarim",
       scientificName: "Synchiropus splendidus",
       image:
@@ -632,6 +673,7 @@ const FishSpecies = () => {
         "Um dos peixes mais coloridos do mundo. Requer alimentação especializada e aquário maduro.",
     },
     {
+      id: 337,
       name: "Peixe-Leão",
       scientificName: "Pterois volitans",
       image:
@@ -649,6 +691,7 @@ const FishSpecies = () => {
         "Peixe exótico com espinhos venenosos. Requer cuidados especiais e não deve ser mantido com peixes pequenos.",
     },
     {
+      id: 338,
       name: "Chromis Azul",
       scientificName: "Chromis cyanea",
       image:
@@ -666,6 +709,7 @@ const FishSpecies = () => {
         "Peixe azul elétrico que se dá bem em cardumes. Excelente para iniciantes em aquários marinhos.",
     },
     {
+      id: 339,
       name: "Peixe-Anjo Flameback",
       scientificName: "Centropyge acanthops",
       image:
@@ -683,6 +727,7 @@ const FishSpecies = () => {
         "Peixe-anjo anão com coloração laranja-avermelhada. Menor e mais adequado para aquários médios que outros peixes-anjo.",
     },
     {
+      id: 340,
       name: "Camarão Pistola",
       scientificName: "Alpheus soror",
       image:
@@ -700,6 +745,7 @@ const FishSpecies = () => {
         "Capaz de produzir um estalido sonoro com sua garra que atordoa presas. Geralmente forma parceria simbiótica com góbios.",
     },
     {
+      id: 341,
       name: "Peixe-folha",
       scientificName: "Chaetodermis penicilligerus",
       image:
@@ -734,9 +780,18 @@ const FishSpecies = () => {
   );
 
   // Reset to first page when filter or search changes
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterType]);
+
+  useEffect(() => {
+    if (speciesId) {
+      const species = fishData.find((f) => f.id === Number(speciesId));
+      if (species) {
+        setSelectedFish(species);
+      }
+    }
+  }, [speciesId]);
 
   const scrollToTop = () => {
     setTimeout(() => {

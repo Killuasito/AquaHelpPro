@@ -32,7 +32,10 @@ import ProductsPlants from "./pages/ProductsPlants";
 import ProductsEquipment from "./pages/ProductsEquipment";
 
 // Import CheckoutPage
-import CheckoutPage from './pages/CheckoutPage';
+import CheckoutPage from "./pages/CheckoutPage";
+
+// Import Search page
+import Search from "./pages/Search";
 
 // Create a component to wrap Routes with AnimatePresence
 function AnimatedRoutes() {
@@ -150,6 +153,14 @@ function AnimatedRoutes() {
           element={
             <PageTransition>
               <CheckoutPage />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <PageTransition>
+              <Search />
             </PageTransition>
           }
         />
