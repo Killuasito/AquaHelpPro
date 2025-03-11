@@ -139,7 +139,7 @@ const ProductDetail = ({ product, onClose }) => {
         {/* Close button - inside the card */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-red-300 z-10 transition-all duration-200 transform hover:scale-110 border border-gray-200"
+          className="absolute top-4 right-4 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-gray-200 z-10 transition-all duration-200 transform hover:scale-110 border border-gray-200"
           aria-label="Fechar"
         >
           <FaTimes className="text-gray-600" />
