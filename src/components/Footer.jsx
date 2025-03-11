@@ -154,7 +154,7 @@ const Footer = () => {
               <div className="bg-white rounded-full p-2">
                 <FaFish className="text-2xl text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold">AquaHelpPro</h2>
+              <h2 className="text-2xl font-bold">Aquasferium</h2>
             </motion.div>
             <p className="text-blue-100 mb-5 leading-relaxed">
               Sua fonte completa de informações sobre aquários, peixes

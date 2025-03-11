@@ -271,10 +271,7 @@ const Header = () => {
                   scrolled ? "text-blue-600" : "text-white"
                 }`}
               >
-                AquaHelp
-                <span className={scrolled ? "text-blue-500" : "text-blue-100"}>
-                  Pro
-                </span>
+                Aquasferium
               </h1>
               <div className="hidden md:block">
                 <p

@@ -371,7 +371,7 @@ const HomePage = () => {
             </div>
             <div className="md:w-1/2">
               <h2 className="text-3xl font-bold text-blue-800 mb-4">
-                Sobre a AquaHelpPro
+                Sobre a Aquasferium
               </h2>
               <p className="text-lg text-gray-600 mb-6">
                 A AquaHelpPro nasceu da paixão por aquarismo e da necessidade de
@@ -604,7 +604,7 @@ const HomePage = () => {
 
         <div className="space-y-6">
           <FaqItem
-            question="O AquaHelpPro é gratuito?"
+            question="O Aquasferium é gratuito?"
             answer="Sim! Oferecemos uma versão completamente gratuita com todas as funcionalidades essenciais para o gerenciamento do seu aquário. Também temos planos premium com recursos avançados para aquaristas profissionais."
           />
           <FaqItem
@@ -616,7 +616,7 @@ const HomePage = () => {
             answer="O sistema de lembretes analisa os dados do seu aquário e cria alertas personalizados para trocas de água, alimentação, adição de fertilizantes, manutenção de equipamentos e muito mais, tudo baseado nas necessidades específicas do seu ecossistema."
           />
           <FaqItem
-            question="Posso usar o AquaHelpPro em dispositivos móveis?"
+            question="Posso usar o Aquasferium em dispositivos móveis?"
             answer="Sim, nossa plataforma é totalmente responsiva e funciona perfeitamente em smartphones e tablets. Também oferecemos um aplicativo nativo para iOS e Android com funcionalidades offline."
           />
           <FaqItem
@@ -641,7 +641,7 @@ const HomePage = () => {
         </h2>
         <p className="text-xl text-gray-600 mb-10">
           Junte-se a milhares de aquaristas que já transformaram seus aquários
-          com a AquaHelpPro e descubra produtos de qualidade em nossa loja
+          com o Aquasferium e descubra produtos de qualidade em nossa loja
           especializada
         </p>
 
