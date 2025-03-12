@@ -45,7 +45,7 @@ const ParameterCalculator = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [stocking, setStocking] = useState([]);
   const [fishName, setFishName] = useState("");
-  const [fishQuantity, setFishQuantity] = useState(1);
+  const [fishQuantity, setFishQuantity] = useState(""); // Mudado de 1 para ""
   const [fishSize, setFishSize] = useState("small");
   const menuRef = useRef(null);
 
@@ -279,7 +279,7 @@ const ParameterCalculator = () => {
 
   // Modificar os fatores de tamanho para melhor representar o bioload
   const addFish = () => {
-    if (!fishName.trim()) return;
+    if (!fishName.trim() || !fishQuantity) return; // Validação adicionada para quantidade
 
     const sizeFactors = {
       small: 2, // 1-5 cm: média 3cm
@@ -291,14 +291,14 @@ const ParameterCalculator = () => {
     const newFish = {
       id: Date.now(),
       name: fishName,
-      quantity: fishQuantity,
+      quantity: parseInt(fishQuantity) || 1, // Garante que seja pelo menos 1
       size: fishSize,
-      bioload: sizeFactors[fishSize] * fishQuantity,
+      bioload: sizeFactors[fishSize] * (parseInt(fishQuantity) || 1),
     };
 
     setStocking([...stocking, newFish]);
     setFishName("");
-    setFishQuantity(1);
+    setFishQuantity(""); // Reseta para string vazia em vez de 1
   };
 
   const removeFish = (id) => {
