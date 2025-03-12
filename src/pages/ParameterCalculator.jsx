@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   FaCalculator,
@@ -16,6 +16,8 @@ import {
   FaTint,
   FaRegLightbulb,
   FaTimes,
+  FaFish,
+  FaChevronDown,
 } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 
@@ -40,6 +42,12 @@ const ParameterCalculator = () => {
     ph: "",
   });
   const [parameterHistory, setParameterHistory] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [stocking, setStocking] = useState([]);
+  const [fishName, setFishName] = useState("");
+  const [fishQuantity, setFishQuantity] = useState(1);
+  const [fishSize, setFishSize] = useState("small");
+  const menuRef = useRef(null);
 
   const parameterRanges = {
     temperature: { min: 24, max: 28, unit: "°C" },
@@ -269,6 +277,58 @@ const ParameterCalculator = () => {
     return "optimal";
   };
 
+  // Modificar os fatores de tamanho para melhor representar o bioload
+  const addFish = () => {
+    if (!fishName.trim()) return;
+
+    const sizeFactors = {
+      small: 2, // 1-5 cm: média 3cm
+      medium: 7, // 5-10 cm: média 7cm
+      large: 12, // 10-15 cm: média 12cm
+      xl: 20, // >15 cm: média 20cm
+    };
+
+    const newFish = {
+      id: Date.now(),
+      name: fishName,
+      quantity: fishQuantity,
+      size: fishSize,
+      bioload: sizeFactors[fishSize] * fishQuantity,
+    };
+
+    setStocking([...stocking, newFish]);
+    setFishName("");
+    setFishQuantity(1);
+  };
+
+  const removeFish = (id) => {
+    setStocking(stocking.filter((fish) => fish.id !== id));
+  };
+
+  const calculateTotalBioload = () => {
+    return stocking.reduce((total, fish) => total + fish.bioload, 0);
+  };
+
+  const getBioloadStatus = () => {
+    if (!tankVolume) return null;
+    const bioload = calculateTotalBioload();
+    const loadPerLiter = bioload / tankVolume;
+
+    // Novos limiares mais realistas
+    if (loadPerLiter < 0.5) return "baixa"; // Menos de 1 cm de peixe por 2L
+    if (loadPerLiter < 1.0) return "ideal"; // Aproximadamente 1 cm de peixe por 1L
+    if (loadPerLiter < 1.5) return "alta"; // Mais de 1 cm de peixe por 0.66L
+    return "crítica"; // Mais de 1 cm de peixe por 0.5L
+  };
+
+  const tabsData = [
+    { id: "volume", icon: FaCalculator, label: "Volume" },
+    { id: "stocking", icon: FaFish, label: "Lotação" },
+    { id: "filter", icon: FaFilter, label: "Filtração" },
+    { id: "maintenance", icon: FaClock, label: "Manutenção" },
+    { id: "parameters", icon: FaThermometer, label: "Parâmetros" },
+  ];
+
   return (
     <motion.div className="min-h-screen bg-gradient-to-br px-4 py-8">
       <div className="text-center mb-10">
@@ -308,51 +368,65 @@ const ParameterCalculator = () => {
 
         {/* Main calculator container */}
         <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
-          <div className="flex overflow-x-auto border-b bg-gray-50">
-            <button
-              className={`px-6 py-4 font-medium flex items-center space-x-2 transition-all ${
-                activeTab === "volume"
-                  ? "text-blue-600 border-b-2 border-blue-600 bg-white"
-                  : "text-gray-600 hover:text-blue-500 hover:bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("volume")}
+          <div className="relative">
+            <div className="md:hidden p-4 bg-white border-b">
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all"
+              >
+                <div className="flex items-center space-x-3">
+                  {tabsData
+                    .find((tab) => tab.id === activeTab)
+                    ?.icon({
+                      className: "text-xl",
+                    })}
+                  <span className="font-medium">
+                    {tabsData.find((tab) => tab.id === activeTab)?.label}
+                  </span>
+                </div>
+                <FaChevronDown
+                  className={`transform transition-transform duration-300 ${
+                    menuOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            </div>
+
+            <div
+              className={`
+              md:flex md:border-b bg-gray-50
+              ${
+                menuOpen
+                  ? "absolute z-50 w-full bg-white shadow-lg rounded-b-lg border-x border-b animate-slideDown"
+                  : "hidden"
+              }
+              md:relative md:shadow-none md:!flex md:animate-none md:border-0 md:rounded-none
+            `}
             >
-              <FaCalculator className="text-lg" />
-              <span>Volume do Aquário</span>
-            </button>
-            <button
-              className={`px-6 py-4 font-medium flex items-center space-x-2 transition-all ${
-                activeTab === "filter"
-                  ? "text-blue-600 border-b-2 border-blue-600 bg-white"
-                  : "text-gray-600 hover:text-blue-500 hover:bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("filter")}
-            >
-              <FaFilter className="text-lg" />
-              <span>Filtração</span>
-            </button>
-            <button
-              className={`px-6 py-4 font-medium flex items-center space-x-2 transition-all ${
-                activeTab === "maintenance"
-                  ? "text-blue-600 border-b-2 border-blue-600 bg-white"
-                  : "text-gray-600 hover:text-blue-500 hover:bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("maintenance")}
-            >
-              <FaClock className="text-lg" />
-              <span>Manutenção</span>
-            </button>
-            <button
-              className={`px-6 py-4 font-medium flex items-center space-x-2 transition-all ${
-                activeTab === "parameters"
-                  ? "text-blue-600 border-b-2 border-blue-600 bg-white"
-                  : "text-gray-600 hover:text-blue-500 hover:bg-gray-100"
-              }`}
-              onClick={() => setActiveTab("parameters")}
-            >
-              <FaThermometer className="text-lg" />
-              <span>Parâmetros da Água</span>
-            </button>
+              {tabsData.map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`
+                    w-full md:w-auto px-6 py-4 font-medium flex items-center space-x-2 transition-all
+                    ${
+                      activeTab === tab.id
+                        ? "text-blue-600 border-b-2 border-blue-600 bg-white"
+                        : "text-gray-600 hover:text-blue-500 hover:bg-gray-100"
+                    }
+                    ${
+                      menuOpen ? "border-b border-gray-100 last:border-b-0" : ""
+                    }
+                  `}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setMenuOpen(false);
+                  }}
+                >
+                  <tab.icon className="text-lg" />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="p-8">
@@ -923,6 +997,260 @@ const ParameterCalculator = () => {
                           ))}
                         </tbody>
                       </table>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+
+            {activeTab === "stocking" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                    <FaFish className="mr-3 text-blue-500" />
+                    Calculadora de Lotação
+                  </h2>
+                  {tankVolume && (
+                    <div className="text-sm text-gray-500 flex items-center space-x-2">
+                      <FaInfoCircle />
+                      <span>Volume do aquário: {tankVolume.toFixed(1)}L</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                    Adicionar Peixe
+                  </h3>
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Nome do Peixe
+                      </label>
+                      <div className="relative">
+                        <FaFish className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="text"
+                          value={fishName}
+                          onChange={(e) => setFishName(e.target.value)}
+                          className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-300 transition-all"
+                          placeholder="Ex: Neon"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Quantidade
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={fishQuantity}
+                        onChange={(e) =>
+                          setFishQuantity(parseInt(e.target.value) || 1)
+                        }
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-300 transition-all"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Tamanho
+                      </label>
+                      <select
+                        value={fishSize}
+                        onChange={(e) => setFishSize(e.target.value)}
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-blue-300 transition-all bg-white"
+                      >
+                        <option value="small">Pequeno (1-5 cm)</option>
+                        <option value="medium">Médio (5-10 cm)</option>
+                        <option value="large">Grande (10-15 cm)</option>
+                        <option value="xl">Muito Grande (+15 cm)</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-end">
+                      <button
+                        onClick={addFish}
+                        className="w-full px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm flex items-center justify-center space-x-2"
+                      >
+                        <FaFish />
+                        <span>Adicionar Peixe</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {stocking.length > 0 && (
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-700 flex items-center">
+                        <FaChartBar className="mr-2 text-blue-500" />
+                        Lista de Peixes
+                      </h3>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Peixe
+                            </th>
+                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Quantidade
+                            </th>
+                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Tamanho
+                            </th>
+                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Carga Biológica
+                            </th>
+                            <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Ações
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {stocking.map((fish) => (
+                            <tr
+                              key={fish.id}
+                              className="hover:bg-gray-50 transition-colors"
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <FaFish className="text-gray-400 mr-2" />
+                                  <span className="font-medium text-gray-900">
+                                    {fish.name}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-center text-gray-500">
+                                {fish.quantity}
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <span
+                                  className={`
+                      inline-flex px-2 py-1 text-xs font-medium rounded-full
+                      ${
+                        fish.size === "small"
+                          ? "bg-blue-100 text-blue-700"
+                          : fish.size === "medium"
+                          ? "bg-green-100 text-green-700"
+                          : fish.size === "large"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-red-100 text-red-700"
+                      }
+                    `}
+                                >
+                                  {fish.size === "small" && "Pequeno"}
+                                  {fish.size === "medium" && "Médio"}
+                                  {fish.size === "large" && "Grande"}
+                                  {fish.size === "xl" && "Muito Grande"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                  {fish.bioload}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <button
+                                  onClick={() => removeFish(fish.id)}
+                                  className="text-red-500 hover:text-red-700 transition-colors p-1 hover:bg-red-50 rounded"
+                                >
+                                  <FaTimes />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {tankVolume && getBioloadStatus() && (
+                  <motion.div
+                    initial={{ scale: 0.95 }}
+                    animate={{ scale: 1 }}
+                    className="mt-6 rounded-xl shadow-sm overflow-hidden border border-gray-200"
+                  >
+                    <div
+                      className={`p-6 ${
+                        getBioloadStatus() === "ideal"
+                          ? "bg-gradient-to-r from-green-500 to-green-600"
+                          : getBioloadStatus() === "baixa"
+                          ? "bg-gradient-to-r from-blue-500 to-blue-600"
+                          : getBioloadStatus() === "alta"
+                          ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                          : "bg-gradient-to-r from-red-500 to-red-600"
+                      }`}
+                    >
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                          <div className="p-3 bg-white/30 backdrop-blur-sm rounded-lg">
+                            <FaChartLine className="text-2xl text-white" />
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-lg font-bold text-white mb-2">
+                            Análise de Lotação
+                          </h4>
+                          <div className="space-y-1 text-white/90">
+                            <p className="flex items-center space-x-2">
+                              <span>Carga biológica total:</span>
+                              <span className="font-semibold">
+                                {calculateTotalBioload()}
+                              </span>
+                            </p>
+                            <p className="flex items-center space-x-2">
+                              <span>Carga por litro:</span>
+                              <span className="font-semibold">
+                                {(calculateTotalBioload() / tankVolume).toFixed(
+                                  2
+                                )}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-white">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium">Status:</span>
+                        <span
+                          className={`
+              px-2 py-1 rounded-full text-sm font-medium
+              ${
+                getBioloadStatus() === "ideal"
+                  ? "bg-green-100 text-green-700"
+                  : getBioloadStatus() === "baixa"
+                  ? "bg-blue-100 text-blue-700"
+                  : getBioloadStatus() === "alta"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-red-100 text-red-700"
+              }
+            `}
+                        >
+                          {getBioloadStatus().toUpperCase()}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-gray-600">
+                        {getBioloadStatus() === "ideal"
+                          ? "Lotação ideal para o aquário"
+                          : getBioloadStatus() === "baixa"
+                          ? "Ainda há espaço para mais peixes"
+                          : getBioloadStatus() === "alta"
+                          ? "Considere reduzir a quantidade de peixes"
+                          : "Necessário reduzir a quantidade de peixes urgentemente"}
+                      </p>
                     </div>
                   </motion.div>
                 )}
