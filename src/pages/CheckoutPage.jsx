@@ -19,6 +19,7 @@ import {
   FaExclamationTriangle,
   FaSearch,
 } from "react-icons/fa";
+import emailjs from "@emailjs/browser";
 
 // Input mask helpers
 const formatCPF = (value) => {
@@ -75,10 +76,10 @@ const CEPService = {
 
 // Mock payment service client-side only
 const PaymentService = {
-  // Create a simulated transaction
   createTransaction: (orderData) => {
     return new Promise((resolve) => {
       const transactionId = `tx_${Math.random().toString(36).substr(2, 9)}`;
+      const pixCode = "546.965.398-65";
 
       // Store in localStorage for persistence
       const transaction = {
@@ -87,134 +88,57 @@ const PaymentService = {
         status: "pending",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        pix: {
+          code: pixCode,
+          qrCodeImage:
+            "https://chart.googleapis.com/chart?cht=qr&chl=" +
+            pixCode +
+            "&chs=300x300&chld=L|0",
+        },
       };
 
-      // Save to localStorage
       const transactions = JSON.parse(
         localStorage.getItem("transactions") || "{}"
       );
       transactions[transactionId] = transaction;
       localStorage.setItem("transactions", JSON.stringify(transactions));
 
-      // Simulate network delay
+      // Resolve immediately with PIX data
       setTimeout(() => {
-        // Handle different payment methods
-        if (orderData.paymentMethod === "credit") {
-          resolve({
-            success: true,
-            transactionId,
-            message: "Processando pagamento com cartão",
-          });
-        } else if (orderData.paymentMethod === "boleto") {
-          // Generate mock boleto
-          const dueDate = new Date();
-          dueDate.setDate(dueDate.getDate() + 3);
-
-          const boleto = {
-            barCode: "23793381286000782798602186300008790350000010000",
-            barCodeImage: "https://dummyimage.com/400x100/000/fff&text=Boleto",
-            dueDate: dueDate.toLocaleDateString("pt-BR"),
-            pdfUrl: "#",
-          };
-
-          transactions[transactionId].boleto = boleto;
-          localStorage.setItem("transactions", JSON.stringify(transactions));
-
-          resolve({
-            success: true,
-            transactionId,
-            boleto,
-            message: "Boleto gerado com sucesso!",
-          });
-        } else if (orderData.paymentMethod === "pix") {
-          // Generate mock PIX data
-          const pix = {
-            code: `00020126580014BR.GOV.BCB.PIX0136${Math.random()
-              .toString(36)
-              .substr(2, 20)}5204000053039865406${orderData.totalAmount.toFixed(
-              2
-            )}5802BR5913Aquarium Store6008Sao Paulo62150511${transactionId}6304E2B3`,
-            qrCodeImage:
-              "https://dummyimage.com/400x400/000/fff&text=QR+Code+PIX",
-          };
-
-          transactions[transactionId].pix = pix;
-          localStorage.setItem("transactions", JSON.stringify(transactions));
-
-          resolve({
-            success: true,
-            transactionId,
-            pix,
-            message: "PIX gerado com sucesso!",
-          });
-        }
+        resolve({
+          success: true,
+          transactionId,
+          pix: transaction.pix,
+          message: "PIX gerado com sucesso!",
+        });
       }, 700);
     });
   },
 
-  // Check transaction status (simulates checking with payment provider)
   checkPaymentStatus: (transactionId) => {
-    return new Promise((resolve) => {
-      // Get transaction from localStorage
-      const transactions = JSON.parse(
-        localStorage.getItem("transactions") || "{}"
-      );
-      const transaction = transactions[transactionId];
+    return new Promise((resolve, reject) => {
+      try {
+        const transactions = JSON.parse(
+          localStorage.getItem("transactions") || "{}"
+        );
+        const transaction = transactions[transactionId];
 
-      if (!transaction) {
-        resolve({
-          success: false,
-          message: "Transação não encontrada",
-        });
-        return;
-      }
-
-      // Simulate network delay
-      setTimeout(() => {
-        // For credit card, simulate 80% success rate
-        if (
-          transaction.paymentMethod === "credit" &&
-          transaction.status === "pending"
-        ) {
-          const success = Math.random() < 0.8;
-
-          if (success) {
-            transaction.status = "completed";
-            transaction.updatedAt = new Date().toISOString();
-          } else if (Math.random() < 0.3) {
-            // 30% chance to fail if not success
-            transaction.status = "failed";
-            transaction.error = "Cartão recusado pela operadora";
-            transaction.updatedAt = new Date().toISOString();
-          }
+        if (!transaction) {
+          resolve({
+            success: false,
+            message: "Transação não encontrada",
+          });
+          return;
         }
-
-        // For PIX, simulate gradual payment confirmation (10% chance each check)
-        if (
-          transaction.paymentMethod === "pix" &&
-          transaction.status === "pending"
-        ) {
-          if (Math.random() < 0.1) {
-            transaction.status = "completed";
-            transaction.updatedAt = new Date().toISOString();
-          }
-        }
-
-        // Update localStorage
-        transactions[transactionId] = transaction;
-        localStorage.setItem("transactions", JSON.stringify(transactions));
 
         resolve({
           success: true,
           status: transaction.status,
-          message:
-            transaction.status === "completed"
-              ? "Pagamento confirmado!"
-              : transaction.status === "failed"
-              ? transaction.error || "Pagamento falhou."
-              : "Aguardando pagamento.",
+          message: "Aguardando pagamento.",
         });
-      }, 500);
+      } catch (error) {
+        reject(error);
+      }
     });
   },
 };
@@ -246,7 +170,7 @@ const CheckoutPage = () => {
     city: "",
     state: "",
     // Pagamento
-    paymentMethod: "",
+    paymentMethod: "pix", // Set PIX as default payment method
     // Cartão de crédito
     cardNumber: "",
     cardName: "",
@@ -399,8 +323,11 @@ const CheckoutPage = () => {
 
   // On component unmount, clear any intervals
   useEffect(() => {
+    const interval = paymentPollingInterval;
     return () => {
-      if (paymentPollingInterval) clearInterval(paymentPollingInterval);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
   }, [paymentPollingInterval]);
 
@@ -523,26 +450,8 @@ const CheckoutPage = () => {
           image: item.image,
         })),
         totalAmount: total,
-        paymentMethod: formData.paymentMethod,
+        paymentMethod: "pix", // Always use PIX
       };
-
-      // Add payment details based on method
-      if (formData.paymentMethod === "credit") {
-        orderData.payment = {
-          cardNumber: formData.cardNumber.replace(/\s/g, ""),
-          cardName: formData.cardName,
-          cardExpiry: formData.cardExpiry,
-          cardCvv: formData.cardCvv,
-        };
-      } else if (formData.paymentMethod === "boleto") {
-        orderData.payment = {
-          cpf: formData.cpfBoleto || formData.cpf,
-        };
-      } else if (formData.paymentMethod === "pix") {
-        orderData.payment = {
-          pixKey: formData.pixKey,
-        };
-      }
 
       // Process using client-side payment service
       const response = await PaymentService.createTransaction(orderData);
@@ -554,51 +463,22 @@ const CheckoutPage = () => {
       // Store transaction ID
       setTransactionId(response.transactionId);
 
-      // Different handling based on payment method
-      if (formData.paymentMethod === "credit") {
-        // Start polling for credit card payment status
-        const intervalId = setInterval(() => {
-          checkPaymentStatus(response.transactionId);
-        }, 5000); // Check every 5 seconds
+      // Immediately set PIX data
+      setPixCode(response.pix.code);
+      setPixQrCodeImage(
+        "https://chart.googleapis.com/chart?cht=qr&chl=" +
+          response.pix.code +
+          "&chs=300x300&chld=L|0"
+      );
 
-        setPaymentPollingInterval(intervalId);
+      setPaymentStatus({
+        processing: false,
+        confirmed: false,
+        error: null,
+      });
 
-        // Initial check
-        checkPaymentStatus(response.transactionId);
-      } else if (formData.paymentMethod === "boleto") {
-        // For boleto, we just show the boleto and don't need to verify payment immediately
-        setPaymentStatus({
-          processing: false,
-          confirmed: true,
-          error: null,
-        });
-
-        // Set boleto details
-        setBoletoDetails(response.boleto);
-
-        // Move to confirmation page with boleto details
-        setStep(4);
-      } else if (formData.paymentMethod === "pix") {
-        // For PIX, set the PIX code and QR code
-        setPixCode(response.pix.code);
-        setPixQrCodeImage(response.pix.qrCodeImage);
-
-        // Start polling for PIX payment
-        const intervalId = setInterval(() => {
-          checkPaymentStatus(response.transactionId);
-        }, 5000);
-
-        setPaymentPollingInterval(intervalId);
-
-        // Show PIX payment screen
-        setPaymentStatus({
-          processing: false,
-          confirmed: false,
-          error: null,
-        });
-
-        setStep(3.5);
-      }
+      // Move to PIX payment step
+      setStep(3.5);
     } catch (error) {
       console.error("Payment processing error:", error);
 
@@ -620,50 +500,84 @@ const CheckoutPage = () => {
   const manuallyCheckPixPayment = () => {
     if (!transactionId) return;
 
-    // For demo purposes, let's simulate a 50% chance of payment confirmation when the user clicks "verify payment"
     setPaymentStatus({ processing: true, confirmed: false, error: null });
 
     setTimeout(() => {
-      // Get the current transaction
       const transactions = JSON.parse(
         localStorage.getItem("transactions") || "{}"
       );
       const transaction = transactions[transactionId];
 
-      if (transaction && transaction.paymentMethod === "pix") {
-        // 50% chance of payment confirmation when manually checking
-        if (Math.random() < 0.5) {
-          transaction.status = "completed";
-          transaction.updatedAt = new Date().toISOString();
+      if (transaction) {
+        transaction.status = "completed";
+        transaction.updatedAt = new Date().toISOString();
 
-          // Update localStorage
-          transactions[transactionId] = transaction;
-          localStorage.setItem("transactions", JSON.stringify(transactions));
+        // Atualizar localStorage
+        transactions[transactionId] = transaction;
+        localStorage.setItem("transactions", JSON.stringify(transactions));
 
-          setPaymentStatus({
-            processing: false,
-            confirmed: true,
-            error: null,
-          });
-          setPaymentCompleted(true);
+        setPaymentStatus({
+          processing: false,
+          confirmed: true,
+          error: null,
+        });
+        setPaymentCompleted(true);
 
-          // Clear polling
-          if (paymentPollingInterval) {
-            clearInterval(paymentPollingInterval);
-            setPaymentPollingInterval(null);
-          }
-        } else {
-          // Payment still pending
-          setPaymentStatus({
-            processing: false,
-            confirmed: false,
-            error: null,
-          });
+        // Enviar email com os dados do pedido
+        const orderData = {
+          customer: {
+            name: formData.name,
+            email: formData.email,
+            cpf: formData.cpf,
+            phone: formData.phone,
+          },
+          shipping: {
+            address: {
+              street: formData.street,
+              number: formData.number,
+              complement: formData.complement,
+              neighborhood: formData.neighborhood,
+              city: formData.city,
+              state: formData.state,
+              zipCode: formData.cep,
+            },
+          },
+          items: cartItems,
+          totalAmount: total,
+          transactionId: transactionId,
+        };
+
+        sendOrderConfirmationEmail(orderData);
+        clearCart();
+        setStep(4); // Ir direto para a página de confirmação
+
+        // Limpar polling
+        if (paymentPollingInterval) {
+          clearInterval(paymentPollingInterval);
+          setPaymentPollingInterval(null);
         }
       }
 
       setIsPaymentBeingVerified(false);
     }, 1500);
+  };
+
+  // ADICIONE esta nova função para simular o pagamento (apenas para demonstração)
+  const simulatePixPayment = () => {
+    // Simular que o pagamento foi realizado
+    const pixConfirmations = JSON.parse(
+      localStorage.getItem("pixConfirmations") || "{}"
+    );
+
+    pixConfirmations[transactionId] = {
+      timestamp: new Date().toISOString(),
+      amount: total,
+    };
+
+    localStorage.setItem("pixConfirmations", JSON.stringify(pixConfirmations));
+    alert(
+      "Simulação: PIX foi pago com sucesso! Agora clique em 'Verificar Pagamento'"
+    );
   };
 
   const handleSubmit = (e) => {
@@ -792,19 +706,11 @@ const CheckoutPage = () => {
       {/* Action buttons */}
       <div className="flex flex-col md:flex-row gap-4 mt-6">
         {!paymentCompleted ? (
-          <>
-            <button
-              type="button"
-              onClick={() => setStep(3)}
-              className="py-3 px-6 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-            >
-              Voltar e Escolher Outro Método
-            </button>
-
+          <div className="w-full">
             <Button
               onClick={manuallyCheckPixPayment}
               disabled={isPaymentBeingVerified}
-              className="flex items-center justify-center"
+              className="flex items-center justify-center w-full"
             >
               {isPaymentBeingVerified ? (
                 <span className="flex items-center">
@@ -818,11 +724,15 @@ const CheckoutPage = () => {
                 </span>
               )}
             </Button>
-          </>
+          </div>
         ) : (
-          <Button onClick={(e) => handleSubmit(e)} className="w-full">
-            Concluir Pedido
-          </Button>
+          <button
+            onClick={() => (window.location.href = "/")}
+            className="inline-flex items-center justify-center w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            <FaArrowLeft className="mr-2" />
+            Voltar ao Menu
+          </button>
         )}
       </div>
     </div>
@@ -1075,168 +985,28 @@ const CheckoutPage = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex flex-wrap items-center gap-2 sm:gap-3">
                   <FaCreditCard className="text-blue-500" />
-                  <span className="break-words">Forma de Pagamento</span>
+                  <span className="break-words">Pagamento via PIX</span>
                 </h2>
 
-                {/* Payment status message */}
-                {paymentStatus.error && (
-                  <div className="p-4 mb-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-start">
-                      <FaTimes className="text-red-500 mt-0.5 mr-2 flex-shrink-0" />
-                      <p className="text-red-700">{paymentStatus.error}</p>
-                    </div>
+                <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-700 mb-3">
+                    Pagamento via PIX
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Na próxima tela você receberá um QR Code para realizar o
+                    pagamento. Após efetuar o pagamento, você receberá a
+                    confirmação por email em instantes.
+                  </p>
+
+                  <div className="bg-blue-50 p-4 rounded-lg flex items-center justify-center flex-col">
+                    <FaQrcode className="text-blue-500 text-5xl mb-3" />
+                    <p className="text-center text-blue-700">
+                      O pagamento via PIX é processado instantaneamente e você
+                      receberá a confirmação por email.
+                    </p>
                   </div>
-                )}
-
-                <div className="space-y-4">
-                  <div className="flex flex-col gap-3">
-                    <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="credit"
-                        className="mr-3"
-                        onChange={handleFormChange}
-                        checked={formData.paymentMethod === "credit"}
-                      />
-                      <FaCreditCard className="mr-2 text-blue-500" />
-                      Cartão de Crédito
-                    </label>
-                    <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="boleto"
-                        className="mr-3"
-                        onChange={handleFormChange}
-                        checked={formData.paymentMethod === "boleto"}
-                      />
-                      <FaBarcode className="mr-2 text-blue-500" />
-                      Boleto Bancário
-                    </label>
-                    <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="pix"
-                        className="mr-3"
-                        onChange={handleFormChange}
-                        checked={formData.paymentMethod === "pix"}
-                      />
-                      <FaMoneyBill className="mr-2 text-blue-500" />
-                      PIX
-                    </label>
-                  </div>
-
-                  {formData.paymentMethod === "credit" && (
-                    <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <h3 className="text-lg font-medium text-gray-700 mb-3">
-                        Dados do Cartão
-                      </h3>
-                      <InputField
-                        name="cardNumber"
-                        label="Número do Cartão"
-                        placeholder="0000 0000 0000 0000"
-                        value={formData.cardNumber}
-                        onChange={handleFormChange}
-                        required={formData.paymentMethod === "credit"}
-                      />
-                      <InputField
-                        name="cardName"
-                        label="Nome no Cartão"
-                        placeholder="Como aparece no cartão"
-                        value={formData.cardName}
-                        onChange={handleFormChange}
-                        required={formData.paymentMethod === "credit"}
-                      />
-                      <div className="grid grid-cols-2 gap-4">
-                        <InputField
-                          name="cardExpiry"
-                          label="Validade (MM/AA)"
-                          placeholder="MM/AA"
-                          value={formData.cardExpiry}
-                          onChange={handleFormChange}
-                          required={formData.paymentMethod === "credit"}
-                        />
-                        <InputField
-                          name="cardCvv"
-                          label="CVV"
-                          placeholder="000"
-                          value={formData.cardCvv}
-                          onChange={handleFormChange}
-                          required={formData.paymentMethod === "credit"}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {formData.paymentMethod === "boleto" && (
-                    <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <h3 className="text-lg font-medium text-gray-700 mb-3">
-                        Dados para Boleto
-                      </h3>
-                      <p className="text-gray-600 mb-4">
-                        O boleto será gerado em seu nome e enviado para seu
-                        email. Você terá até 3 dias úteis para efetuar o
-                        pagamento.
-                      </p>
-                      <InputField
-                        name="cpfBoleto"
-                        label="CPF/CNPJ do Pagador"
-                        placeholder="Digite o CPF ou CNPJ"
-                        value={formData.cpfBoleto || formData.cpf}
-                        onChange={handleFormChange}
-                        required={formData.paymentMethod === "boleto"}
-                      />
-                      <div className="bg-yellow-50 p-3 rounded-lg mt-3 flex items-start">
-                        <FaBarcode className="text-yellow-600 mt-1 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-yellow-700">
-                          Após a confirmação, você receberá o boleto por email e
-                          também poderá visualizá-lo na página de confirmação do
-                          pedido.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {formData.paymentMethod === "pix" && (
-                    <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <h3 className="text-lg font-medium text-gray-700 mb-3">
-                        Pagamento via PIX
-                      </h3>
-                      <p className="text-gray-600 mb-4">
-                        Um QR Code será gerado na próxima página para que você
-                        possa efetuar o pagamento imediatamente.
-                      </p>
-
-                      <div className="bg-blue-50 p-4 rounded-lg flex items-center justify-center flex-col">
-                        <FaQrcode className="text-blue-500 text-5xl mb-3" />
-                        <p className="text-center text-blue-700">
-                          Após confirmar o pedido, você receberá um QR Code para
-                          fazer o pagamento via PIX. O pagamento é processado
-                          instantaneamente.
-                        </p>
-                      </div>
-
-                      <InputField
-                        name="pixKey"
-                        label="Chave PIX para Reembolso (opcional)"
-                        placeholder="CPF, email, telefone ou chave aleatória"
-                        value={formData.pixKey}
-                        onChange={handleFormChange}
-                      />
-                    </div>
-                  )}
-
-                  {!formData.paymentMethod && (
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                      <p className="text-blue-700 text-center">
-                        Por favor, selecione uma forma de pagamento para
-                        continuar
-                      </p>
-                    </div>
-                  )}
                 </div>
+
                 <div className="flex gap-4 mt-6">
                   <button
                     type="button"
@@ -1246,26 +1016,14 @@ const CheckoutPage = () => {
                   >
                     Voltar
                   </button>
-                  <Button
-                    type="submit"
-                    disabled={
-                      !isPaymentFormComplete() || paymentStatus.processing
-                    }
-                    className={
-                      !isPaymentFormComplete() || paymentStatus.processing
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }
-                  >
+                  <Button type="submit" disabled={paymentStatus.processing}>
                     {paymentStatus.processing ? (
                       <span className="flex items-center justify-center">
                         <FaSpinner className="animate-spin mr-2" />
                         Processando...
                       </span>
-                    ) : formData.paymentMethod === "pix" ? (
-                      "Gerar QR Code PIX"
                     ) : (
-                      "Finalizar Compra"
+                      "Gerar QR Code PIX"
                     )}
                   </Button>
                 </div>
@@ -1492,5 +1250,44 @@ const Button = ({ children, disabled, className, ...props }) => (
     {children}
   </motion.button>
 );
+
+const sendOrderConfirmationEmail = async (orderData) => {
+  try {
+    const templateParams = {
+      to_email: "tififerreira@gmail.com", // Coloque seu email aqui
+      customer_name: orderData.customer.name,
+      customer_email: orderData.customer.email,
+      customer_phone: orderData.customer.phone,
+      customer_cpf: orderData.customer.cpf,
+      shipping_address: `${orderData.shipping.address.street}, ${orderData.shipping.address.number}`,
+      shipping_complement: orderData.shipping.address.complement,
+      shipping_neighborhood: orderData.shipping.address.neighborhood,
+      shipping_city: `${orderData.shipping.address.city} - ${orderData.shipping.address.state}`,
+      shipping_cep: orderData.shipping.address.zipCode,
+      order_items: orderData.items
+        .map(
+          (item) =>
+            `${item.name} - Qtd: ${item.quantity} - R$ ${(
+              item.price * item.quantity
+            ).toFixed(2)}`
+        )
+        .join("\n"),
+      order_total: `R$ ${orderData.totalAmount.toFixed(2)}`,
+      payment_method: "PIX",
+      transaction_id: orderData.transactionId,
+    };
+
+    await emailjs.send(
+      "service_k8musaf", // Seu Service ID do EmailJS (encontrado no Integration)
+      "template_k0vdpj8", // Seu Template ID do EmailJS (encontrado em Email Templates)
+      templateParams,
+      "y_Gw2gjFyzo9n9T2h" // Sua Public Key do EmailJS (encontrada em Account > API Keys)
+    );
+
+    console.log("Email enviado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao enviar email:", error);
+  }
+};
 
 export default CheckoutPage;

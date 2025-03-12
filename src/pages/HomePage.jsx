@@ -132,7 +132,7 @@ const HomePage = () => {
             O que oferecemos
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            A AquaHelpPro é uma plataforma completa para aquaristas de todos os
+            O Aquasferium é uma plataforma completa para aquaristas de todos os
             níveis, com gerenciamento de aquários e uma loja especializada para
             todas as suas necessidades.
           </p>
