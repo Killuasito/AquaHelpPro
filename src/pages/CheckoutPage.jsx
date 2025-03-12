@@ -580,17 +580,25 @@ const CheckoutPage = () => {
     );
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (step < 3) {
       setStep(step + 1);
+      scrollToTop(); // Adicionado scroll para o topo
     } else if (step === 3) {
-      // Process payment instead of immediately clearing cart
       processPayment();
+      scrollToTop(); // Adicionado scroll para o topo
     } else if (step === 3.5 && paymentCompleted) {
-      // If payment is completed at the PIX step, proceed to confirmation
       clearCart();
       setStep(4);
+      scrollToTop(); // Adicionado scroll para o topo
     }
   };
 

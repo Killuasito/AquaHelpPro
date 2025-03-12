@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartContext } from "../contexts/CartContext";
+import toast from "react-hot-toast";
 import {
   FaSearch,
   FaShoppingCart,
@@ -733,6 +734,41 @@ const ProductsFish = () => {
     scrollToTop();
   };
 
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    toast.success(
+      <div className="flex items-center gap-2">
+        <div className="flex-shrink-0 w-10 h-10">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover rounded"
+          />
+        </div>
+        <div>
+          <p className="font-semibold">{product.name}</p>
+          <p className="text-sm opacity-90">adicionado ao carrinho</p>
+        </div>
+      </div>,
+      {
+        position: "bottom-right",
+        duration: 3000,
+        style: {
+          background: "rgba(49, 130, 206, 0.9)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          padding: "16px",
+          borderRadius: "10px",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "rgba(49, 130, 206, 0.9)",
+        },
+      }
+    );
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -925,7 +961,7 @@ const ProductsFish = () => {
                         Detalhes
                       </button>
                       <button
-                        onClick={() => addToCart(product)}
+                        onClick={() => handleAddToCart(product)}
                         disabled={product.stock === 0}
                         className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
@@ -1065,7 +1101,7 @@ const ProductsFish = () => {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                       clipRule="evenodd"
                     />
                   </svg>

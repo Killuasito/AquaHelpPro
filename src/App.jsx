@@ -37,6 +37,9 @@ import CheckoutPage from "./pages/CheckoutPage";
 // Import Search page
 import Search from "./pages/Search";
 
+// Import Toaster
+import { Toaster } from "react-hot-toast";
+
 // Create a component to wrap Routes with AnimatePresence
 function AnimatedRoutes() {
   const location = useLocation();
@@ -181,6 +184,7 @@ function App() {
           </main>
           <Footer />
         </div>
+        <Toaster />
       </CartProvider>
     </Router>
   );
