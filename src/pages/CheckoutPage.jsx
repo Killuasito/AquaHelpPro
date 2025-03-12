@@ -497,12 +497,12 @@ const CheckoutPage = () => {
   const [pixQrCodeImage, setPixQrCodeImage] = useState(null);
 
   // Modified PIX confirmation handling - for client-side simulation
-  const manuallyCheckPixPayment = () => {
+  const manuallyCheckPixPayment = async () => {
     if (!transactionId) return;
 
     setPaymentStatus({ processing: true, confirmed: false, error: null });
 
-    setTimeout(() => {
+    try {
       const transactions = JSON.parse(
         localStorage.getItem("transactions") || "{}"
       );
@@ -547,7 +547,8 @@ const CheckoutPage = () => {
           transactionId: transactionId,
         };
 
-        sendOrderConfirmationEmail(orderData);
+        const orderNumber = await sendOrderConfirmationEmail(orderData);
+        setOrderNumber(orderNumber);
         clearCart();
         setStep(4); // Ir direto para a página de confirmação
 
@@ -559,7 +560,15 @@ const CheckoutPage = () => {
       }
 
       setIsPaymentBeingVerified(false);
-    }, 1500);
+    } catch (error) {
+      console.error("Erro ao processar pagamento:", error);
+      setPaymentStatus({
+        processing: false,
+        confirmed: false,
+        error: "Erro ao processar pagamento. Tente novamente.",
+      });
+      setIsPaymentBeingVerified(false);
+    }
   };
 
   // ADICIONE esta nova função para simular o pagamento (apenas para demonstração)
@@ -1046,6 +1055,11 @@ const CheckoutPage = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaCheck className="text-green-500 text-2xl" />
                 </div>
+                {orderNumber && (
+                  <h2 className="text-xl text-gray-600 mb-4">
+                    Pedido N°: {orderNumber}
+                  </h2>
+                )}
                 <h2 className="text-2xl font-bold text-green-600 mb-4">
                   {formData.paymentMethod === "boleto"
                     ? "Pedido Realizado!"
@@ -1259,10 +1273,21 @@ const Button = ({ children, disabled, className, ...props }) => (
   </motion.button>
 );
 
+const getNextOrderNumber = () => {
+  const lastOrderNumber = localStorage.getItem("lastOrderNumber") || 0;
+  const nextNumber = (parseInt(lastOrderNumber) + 1)
+    .toString()
+    .padStart(5, "0");
+  localStorage.setItem("lastOrderNumber", nextNumber);
+  return nextNumber;
+};
+
 const sendOrderConfirmationEmail = async (orderData) => {
   try {
+    const orderNumber = getNextOrderNumber();
     const templateParams = {
-      to_email: "tififerreira@gmail.com", // Coloque seu email aqui
+      to_email: "tififerreira@gmail.com",
+      order_number: `Pedido N°: ${orderNumber}`, // Adicionado número do pedido
       customer_name: orderData.customer.name,
       customer_email: orderData.customer.email,
       customer_phone: orderData.customer.phone,
@@ -1293,8 +1318,10 @@ const sendOrderConfirmationEmail = async (orderData) => {
     );
 
     console.log("Email enviado com sucesso!");
+    return orderNumber; // Retornar o número do pedido
   } catch (error) {
     console.error("Erro ao enviar email:", error);
+    throw error;
   }
 };
 
