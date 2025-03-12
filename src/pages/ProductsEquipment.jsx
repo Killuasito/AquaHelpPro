@@ -47,7 +47,7 @@ const ProductsEquipment = () => {
 
   const equipmentProducts = [
     {
-      id: 204,
+      id: 500,
       name: "Filtro Hang-On 250L/h",
       type: "filter",
       price: 79.5,
@@ -69,7 +69,7 @@ const ProductsEquipment = () => {
       ],
     },
     {
-      id: 205,
+      id: 501,
       name: "Termostato 25W",
       type: "other",
       price: 69.9,
@@ -91,7 +91,7 @@ const ProductsEquipment = () => {
       ],
     },
     {
-      id: 231,
+      id: 502,
       name: "Termômetro Digital para Aquário",
       type: "other",
       price: 59.9,
@@ -113,7 +113,7 @@ const ProductsEquipment = () => {
       ],
     },
     {
-      id: 232,
+      id: 503,
       name: "Aquário de 28L",
       type: "other",
       price: 199.9,
@@ -136,7 +136,7 @@ const ProductsEquipment = () => {
       ],
     },
     {
-      id: 233,
+      id: 504,
       name: "Substrato de Areia Fina 5kg",
       type: "other",
       price: 6.9,
@@ -158,7 +158,7 @@ const ProductsEquipment = () => {
       ],
     },
     {
-      id: 234,
+      id: 505,
       name: "Acelerador Biológico 100ml",
       type: "other",
       price: 69.9,

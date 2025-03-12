@@ -35,7 +35,7 @@ const Header = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState(() => {
-    const saved = localStorage.getItem('recentSearches');
+    const saved = localStorage.getItem("recentSearches");
     return saved ? JSON.parse(saved) : [];
   });
   const location = useLocation();
@@ -156,11 +156,11 @@ const Header = () => {
       // Add to recent searches
       const newRecentSearches = [
         searchQuery,
-        ...recentSearches.filter(s => s !== searchQuery)
+        ...recentSearches.filter((s) => s !== searchQuery),
       ].slice(0, 5); // Keep only last 5 searches
-      
+
       setRecentSearches(newRecentSearches);
-      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+      localStorage.setItem("recentSearches", JSON.stringify(newRecentSearches));
 
       // Navigate to search page
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
@@ -171,7 +171,7 @@ const Header = () => {
 
   const clearRecentSearches = () => {
     setRecentSearches([]);
-    localStorage.removeItem('recentSearches');
+    localStorage.removeItem("recentSearches");
   };
 
   const handleKeyPress = (e) => {
@@ -548,7 +548,7 @@ const Header = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Buscar produtos, espécies, guias..."
-                  className={`w-full pl-12 pr-24 py-3 rounded-xl outline-none transition-colors
+                  className={`w-full pl-12 pr-10 py-3 rounded-xl outline-none transition-colors
                     ${
                       scrolled
                         ? "bg-gray-100 focus:bg-gray-50 text-gray-900"
@@ -556,31 +556,18 @@ const Header = () => {
                     }`}
                   autoFocus
                 />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-                  <button
-                    type="submit"
-                    className={`px-4 py-1.5 rounded-lg transition-colors
-                      ${
-                        scrolled
-                          ? "bg-blue-600 text-white hover:bg-blue-700"
-                          : "bg-white/10 text-white hover:bg-white/20"
-                      }`}
-                  >
-                    Pesquisar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSearchOpen(false)}
-                    className={`p-1.5 rounded-full
-                      ${
-                        scrolled
-                          ? "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-                          : "text-blue-300 hover:text-white hover:bg-blue-800/50"
-                      }`}
-                  >
-                    <FaTimes className="text-lg" />
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(false)}
+                  className={`absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full
+                    ${
+                      scrolled
+                        ? "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                        : "text-blue-300 hover:text-white hover:bg-blue-800/50"
+                    }`}
+                >
+                  <FaTimes className="text-lg" />
+                </button>
               </form>
 
               {/* Search Suggestions */}
@@ -588,16 +575,18 @@ const Header = () => {
                 {recentSearches.length > 0 && (
                   <div className="mb-4">
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className={`text-sm font-medium ${
-                        scrolled ? "text-gray-500" : "text-blue-200"
-                      }`}>
+                      <h3
+                        className={`text-sm font-medium ${
+                          scrolled ? "text-gray-500" : "text-blue-200"
+                        }`}
+                      >
                         Buscas Recentes
                       </h3>
                       <button
                         onClick={clearRecentSearches}
                         className={`text-xs ${
-                          scrolled 
-                            ? "text-gray-400 hover:text-gray-600" 
+                          scrolled
+                            ? "text-gray-400 hover:text-gray-600"
                             : "text-blue-300 hover:text-white"
                         }`}
                       >
@@ -619,7 +608,11 @@ const Header = () => {
                                 : "bg-blue-800/50 text-white hover:bg-blue-800/70"
                             }`}
                         >
-                          <FaClock className={scrolled ? "text-gray-400" : "text-blue-300"} />
+                          <FaClock
+                            className={
+                              scrolled ? "text-gray-400" : "text-blue-300"
+                            }
+                          />
                           {search}
                         </button>
                       ))}
