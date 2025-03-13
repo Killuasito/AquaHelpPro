@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
   initializeNotifications,
   sendNotification,
+  areNotificationsSupported,
 } from "../services/notificationService";
 
 export const useAquariumUpdates = (aquarium) => {
@@ -9,7 +10,7 @@ export const useAquariumUpdates = (aquarium) => {
   const lastCheckRef = useRef(new Date());
 
   const checkUpdates = useCallback(() => {
-    if (!aquarium) return;
+    if (!aquarium || !areNotificationsSupported()) return;
 
     const now = new Date();
     const lastUpdate = new Date(aquarium.lastUpdated);
@@ -33,6 +34,13 @@ export const useAquariumUpdates = (aquarium) => {
           body: message,
           tag: `ph-${aquarium.id}`,
           requireInteraction: true,
+          url: `/aquarium/${aquarium.id}/parameters`,
+          actions: [
+            {
+              action: "checkPh",
+              title: "Ver Parâmetros",
+            },
+          ],
         });
         newUpdates.unshift({
           id: Date.now(),
@@ -100,7 +108,14 @@ export const useAquariumUpdates = (aquarium) => {
 
   // Initialize notifications
   useEffect(() => {
-    initializeNotifications();
+    const setupNotifications = async () => {
+      const notificationsEnabled = await initializeNotifications();
+      if (!notificationsEnabled) {
+        console.log("Notificações não estão habilitadas");
+      }
+    };
+
+    setupNotifications();
   }, []);
 
   // Set up interval for checks

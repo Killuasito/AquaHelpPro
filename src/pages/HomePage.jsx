@@ -397,12 +397,7 @@ const HomePage = () => {
                 <motion.div
                   className="flex items-center space-x-2"
                   whileHover={{ scale: 1.05 }}
-                >
-                  <FaUsers className="text-blue-500 text-xl" />
-                  <span className="text-gray-700 font-medium">
-                    +25 especialistas
-                  </span>
-                </motion.div>
+                ></motion.div>
                 <motion.div
                   className="flex items-center space-x-2"
                   whileHover={{ scale: 1.05 }}
