@@ -202,55 +202,55 @@ const HomePage = () => {
 
       {/* Our Store Section - NEW */}
       <motion.section
-        className="flex justify-center my-24 py-16 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl mx-auto w-full md:w-2/3"
+        className="flex justify-center my-24 py-8 md:py-16 bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl mx-auto w-full md:w-2/3"
         variants={itemVariants}
       >
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="md:w-1/2">
-              <h2 className="text-3xl font-bold text-amber-800 mb-4">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+            <div className="w-full md:w-1/2">
+              <h2 className="text-2xl md:text-3xl font-bold text-amber-800 mb-4 text-center md:text-left">
                 Nossa Loja Especializada
               </h2>
-              <p className="text-lg text-gray-600 mb-6">
+              <p className="text-base md:text-lg text-gray-600 mb-6 text-center md:text-left">
                 Além de gerenciar seu aquário, você pode encontrar tudo o que
                 precisa em nossa loja online. Oferecemos uma seleção premium de
                 peixes ornamentais, plantas aquáticas vibrantes e equipamentos
                 de alta qualidade.
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="flex items-start space-x-2">
-                  <FaFish className="text-blue-500 text-lg mt-1" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div className="flex items-start space-x-2 bg-white p-3 rounded-lg shadow-sm">
+                  <FaFish className="text-blue-500 text-lg mt-1 flex-shrink-0" />
                   <span className="text-gray-700">
                     Peixes saudáveis e aclimatados
                   </span>
                 </div>
-                <div className="flex items-start space-x-2">
-                  <FaLeaf className="text-green-500 text-lg mt-1" />
+                <div className="flex items-start space-x-2 bg-white p-3 rounded-lg shadow-sm">
+                  <FaLeaf className="text-green-500 text-lg mt-1 flex-shrink-0" />
                   <span className="text-gray-700">
                     Plantas cultivadas em ambientes controlados
                   </span>
                 </div>
-                <div className="flex items-start space-x-2">
-                  <FaBox className="text-amber-500 text-lg mt-1" />
+                <div className="flex items-start space-x-2 bg-white p-3 rounded-lg shadow-sm">
+                  <FaBox className="text-amber-500 text-lg mt-1 flex-shrink-0" />
                   <span className="text-gray-700">
                     Equipamentos das melhores marcas
                   </span>
                 </div>
-                <div className="flex items-start space-x-2">
-                  <FaTruck className="text-gray-500 text-lg mt-1" />
+                <div className="flex items-start space-x-2 bg-white p-3 rounded-lg shadow-sm">
+                  <FaTruck className="text-gray-500 text-lg mt-1 flex-shrink-0" />
                   <span className="text-gray-700">
                     Entrega segura em todo o Brasil
                   </span>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap justify-center md:justify-start gap-3">
                 <Link to="/products/fish">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center text-sm md:text-base"
                   >
                     <FaFish className="mr-2" /> Ver Peixes
                   </motion.button>
@@ -259,7 +259,7 @@ const HomePage = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg flex items-center"
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg flex items-center text-sm md:text-base"
                   >
                     <FaLeaf className="mr-2" /> Ver Plantas
                   </motion.button>
@@ -268,7 +268,7 @@ const HomePage = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 bg-gray-700 text-white rounded-lg flex items-center"
+                    className="px-4 py-2 bg-gray-700 text-white rounded-lg flex items-center text-sm md:text-base"
                   >
                     <FaBox className="mr-2" /> Ver Equipamentos
                   </motion.button>
@@ -276,70 +276,70 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div className="md:w-1/2 grid grid-cols-2 gap-4">
+            <div className="w-full md:w-1/2 grid grid-cols-2 gap-3 md:gap-4 mt-6 md:mt-0">
               <motion.div
-                className="rounded-xl overflow-hidden shadow-lg"
+                className="rounded-xl overflow-hidden shadow-lg bg-white"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <img
                   src="https://i0.wp.com/patadigital.com/wp-content/uploads/2024/03/image-30.png?resize=960%2C590&ssl=1"
                   alt="Peixe ornamental"
-                  className="w-full h-40 object-cover"
+                  className="w-full h-32 md:h-40 object-cover"
                 />
-                <div className="p-2 bg-white">
-                  <p className="text-sm font-semibold text-center">
+                <div className="p-2">
+                  <p className="text-xs md:text-sm font-semibold text-center">
                     Peixes Ornamentais
                   </p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="rounded-xl overflow-hidden shadow-lg"
+                className="rounded-xl overflow-hidden shadow-lg bg-white"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <img
                   src="https://www.aquaplantados.com.br/image/cache/catalog/PLANTAS/Anubias%20barteri%20var.%20nana-800x800.jpg"
                   alt="Plantas aquáticas"
-                  className="w-full h-40 object-cover"
+                  className="w-full h-32 md:h-40 object-cover"
                 />
-                <div className="p-2 bg-white">
-                  <p className="text-sm font-semibold text-center">
+                <div className="p-2">
+                  <p className="text-xs md:text-sm font-semibold text-center">
                     Plantas Aquáticas
                   </p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="rounded-xl overflow-hidden shadow-lg"
+                className="rounded-xl overflow-hidden shadow-lg bg-white"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <img
                   src="https://m.media-amazon.com/images/I/41MZNX9eIQL.jpg"
                   alt="Equipamentos"
-                  className="w-full h-40 object-cover"
+                  className="w-full h-32 md:h-40 object-cover"
                 />
-                <div className="p-2 bg-white">
-                  <p className="text-sm font-semibold text-center">
+                <div className="p-2">
+                  <p className="text-xs md:text-sm font-semibold text-center">
                     Equipamentos
                   </p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="rounded-xl overflow-hidden shadow-lg"
+                className="rounded-xl overflow-hidden shadow-lg bg-white"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <img
                   src="https://images.tcdn.com.br/img/img_prod/648834/camarao_takashi_amano_caridina_multidentata_5_unidades_7779_9_42b3e269ba81465eca29f6b8ee987025.jpeg"
                   alt="Invertebrados"
-                  className="w-full h-40 object-cover"
+                  className="w-full h-32 md:h-40 object-cover"
                 />
-                <div className="p-2 bg-white">
-                  <p className="text-sm font-semibold text-center">
+                <div className="p-2">
+                  <p className="text-xs md:text-sm font-semibold text-center">
                     Invertebrados
                   </p>
                 </div>
@@ -374,7 +374,7 @@ const HomePage = () => {
                 Sobre a Aquasferium
               </h2>
               <p className="text-lg text-gray-600 mb-6">
-                A AquaHelpPro nasceu da paixão por aquarismo e da necessidade de
+                A Aquasferium nasceu da paixão por aquarismo e da necessidade de
                 uma solução completa para gerenciamento de aquários. Nossa
                 missão é tornar o hobby mais acessível e prazeroso para todos.
               </p>
@@ -513,47 +513,6 @@ const HomePage = () => {
             </motion.div>
           </div>
         </div>
-      </motion.div>
-
-      {/* Statistics Section */}
-      <motion.div
-        className="max-w-6xl mx-auto mt-20 grid md:grid-cols-5 gap-5 text-center"
-        variants={containerVariants}
-      >
-        <StatCard
-          number="1000+"
-          text="Espécies Cadastradas"
-          icon={<FaFish />}
-          variants={itemVariants}
-        />
-
-        <StatCard
-          number="24/7"
-          text="Suporte da Comunidade"
-          icon={<FaUsers />}
-          variants={itemVariants}
-        />
-
-        <StatCard
-          number="15.000+"
-          text="Aquários Registrados"
-          icon={<FaWater />}
-          variants={itemVariants}
-        />
-
-        <StatCard
-          number="98%"
-          text="Taxa de Satisfação"
-          icon={<FaStar />}
-          variants={itemVariants}
-        />
-
-        <StatCard
-          number="500+"
-          text="Produtos na Loja"
-          icon={<FaTag />}
-          variants={itemVariants}
-        />
       </motion.div>
 
       {/* Enhanced Testimonials Section */}
@@ -709,37 +668,6 @@ const FeatureCard = ({ icon, title, description, color, variants }) => {
       <div className="p-6">
         <p className="text-gray-600">{description}</p>
       </div>
-    </motion.div>
-  );
-};
-
-// Stat Card Component
-const StatCard = ({ number, text, icon, variants }) => {
-  return (
-    <motion.div
-      className="bg-white p-6 rounded-xl shadow-md"
-      variants={variants}
-      whileHover={{
-        y: -5,
-        boxShadow: "0 15px 30px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <motion.div
-        className="text-4xl text-blue-500 mb-2 flex justify-center"
-        animate={{
-          y: [0, -5, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          repeatType: "reverse",
-        }}
-      >
-        {icon}
-      </motion.div>
-      <h3 className="text-3xl font-bold text-gray-800">{number}</h3>
-      <p className="text-blue-600 mt-1">{text}</p>
     </motion.div>
   );
 };

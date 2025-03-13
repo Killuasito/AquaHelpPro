@@ -173,11 +173,7 @@ const ProductDetail = ({ product, onClose }) => {
 
           {/* Tags overlaying the image */}
           <div className="absolute top-4 left-4 flex flex-col gap-2">
-            {product.isNew && (
-              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
-                Novo
-              </span>
-            )}
+            {/* Removed isNew badge */}
             {product.stock <= 5 && product.stock > 0 && (
               <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
                 Últimas unidades
@@ -298,39 +294,26 @@ const ProductDetail = ({ product, onClose }) => {
                     R$ {product.price.toFixed(2)}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Estoque</p>
-                  <p
-                    className={`font-medium ${
-                      product.stock > 0 ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {product.stock > 0
-                      ? `${product.stock} unidades`
-                      : "Indisponível"}
-                  </p>
-                </div>
               </div>
 
               {/* Add to cart button */}
-              <button
-                onClick={() => addToCart(product)}
-                disabled={product.stock === 0}
-                className={`w-full mt-4 py-3 rounded-lg flex items-center justify-center gap-2 font-medium transition-all ${
-                  product.stock > 0
-                    ? isPlant
-                      ? "bg-green-600 hover:bg-green-700 text-white"
-                      : isEquipment
-                      ? "bg-gray-700 hover:bg-gray-800 text-white"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                <FaShoppingCart />
-                {product.stock > 0
-                  ? "Adicionar ao Carrinho"
-                  : "Produto Indisponível"}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                <button
+                  onClick={onClose}
+                  className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex-1 flex items-center justify-center gap-2"
+                >
+                  <FaTimes /> Fechar
+                </button>
+                <button
+                  onClick={() => {
+                    addToCart(product);
+                    onClose();
+                  }}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex-1 flex items-center justify-center gap-2"
+                >
+                  <FaShoppingCart /> Adicionar ao Carrinho
+                </button>
+              </div>
             </div>
           </div>
 

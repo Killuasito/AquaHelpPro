@@ -161,11 +161,11 @@ const Footer = () => {
               ornamentais e manutenção de ambientes aquáticos. Ajudando
               entusiastas a criarem habitats saudáveis desde 2024.
             </p>
-            <div className="flex space-x-3 mt-5">
-              <SocialIcon icon={<FaFacebook />} ariaLabel="Facebook" />
-              <SocialIcon icon={<FaTwitter />} ariaLabel="Twitter" />
-              <SocialIcon icon={<FaInstagram />} ariaLabel="Instagram" />
-              <SocialIcon icon={<FaYoutube />} ariaLabel="YouTube" />
+            <div className="flex items-center justify-start space-x-4">
+              <SocialIcon
+                icon={<FaInstagram className="text-xl" />}
+                ariaLabel="Siga no Instagram"
+              />
             </div>
           </motion.div>
 
@@ -369,13 +369,15 @@ const FooterLink = ({ to, text }) => (
 // Social icon component with animation
 const SocialIcon = ({ icon, ariaLabel }) => (
   <motion.a
-    href="#"
+    href="https://www.instagram.com/aquasferium/related_profiles/"
+    target="_blank"
+    rel="noopener noreferrer"
     aria-label={ariaLabel}
     className="bg-blue-600 hover:bg-blue-700 w-10 h-10 rounded-full flex items-center justify-center transition-colors"
     whileHover={{
       scale: 1.2,
       rotate: 5,
-      backgroundColor: "#1d4ed8", // tailwind blue-700
+      backgroundColor: "#1d4ed8",
     }}
     whileTap={{ scale: 0.95 }}
   >

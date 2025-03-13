@@ -55,7 +55,6 @@ const ProductsEquipment = () => {
       image: "https://m.media-amazon.com/images/I/41MZNX9eIQL.jpg",
       description:
         "Filtro de fácil instalação e manutenção para aquários pequenos",
-      stock: 15,
       category: "equipamentos",
       specifications: [
         { name: "Vazão", value: "250L/h" },
@@ -77,7 +76,6 @@ const ProductsEquipment = () => {
       image:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCDH9h3Y4JvGBqvBe9r8ciDfiAXT4I9LlOfw&s",
       description: "Controle preciso de temperatura para aquários pequenos",
-      stock: 20,
       category: "equipamentos",
       specifications: [
         { name: "Potência", value: "25W" },
@@ -99,7 +97,6 @@ const ProductsEquipment = () => {
       image:
         "https://images.tcdn.com.br/img/img_prod/731049/termometro_digital_aquario_terrario_estufa_piscina_adega_131_1_e0702baa6cb5acd513cf08ec92bb766a.jpg",
       description: "Monitor de temperatura preciso e fácil de ler",
-      stock: 30,
       category: "equipamentos",
       specifications: [
         { name: "Faixa de Medição", value: "0-50°C" },
@@ -122,7 +119,6 @@ const ProductsEquipment = () => {
         "https://http2.mlstatic.com/D_NQ_NP_763841-MLB70902973730_082023-O.webp",
       description:
         "Kit aquário ideal para iniciantes, com capacidade de 28 litros",
-      stock: 8,
       category: "equipamentos",
       specifications: [
         { name: "Capacidade", value: "28L" },
@@ -144,7 +140,6 @@ const ProductsEquipment = () => {
       image:
         "https://a-static.mlcdn.com.br/1500x1500/areia-duna-fina-para-aquarios-5kg-embalada-a-granel-aquapedras/continentalaquarium/08aeebe2272c11ee90544201ac185049/a2b6f85ef98c1ea614aa3c84900b55b1.jpeg",
       description: "Areia fina natural para aquários plantados e de peixes",
-      stock: 22,
       category: "equipamentos",
       specifications: [
         { name: "Quantidade", value: "5kg" },
@@ -167,7 +162,6 @@ const ProductsEquipment = () => {
         "https://www.darkreefstore.com.br/wp-content/uploads/2025/01/acelerador-biologico-stability-seachem-100-ml.jpg",
       description:
         "Acelera o processo de ciclagem e estabelece colônias de bactérias benéficas",
-      stock: 25,
       category: "equipamentos",
       specifications: [
         { name: "Volume", value: "100ml" },
@@ -432,17 +426,12 @@ const ProductsEquipment = () => {
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col"
                 whileHover={{ y: -5 }}
               >
-                <div className="relative group">
+                <div className="relative group h-48 sm:h-64">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-contain sm:object-cover transition-transform duration-300 group-hover:scale-105 p-2 sm:p-0"
                   />
-                  {product.stock <= 5 && product.stock > 0 && (
-                    <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
-                      Últimas unidades
-                    </span>
-                  )}
                   {product.isNew && (
                     <span className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs">
                       Lançamento
@@ -477,15 +466,6 @@ const ProductsEquipment = () => {
                     <span className="text-2xl font-bold text-gray-700">
                       R$ {product.price.toFixed(2)}
                     </span>
-                    <span
-                      className={`text-sm ${
-                        product.stock > 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {product.stock > 0
-                        ? `${product.stock} em estoque`
-                        : "Indisponível"}
-                    </span>
                   </div>
 
                   <div className="flex gap-2">
@@ -497,8 +477,7 @@ const ProductsEquipment = () => {
                     </button>
                     <button
                       onClick={() => handleAddToCart(product)}
-                      disabled={product.stock === 0}
-                      className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
                     >
                       <FaShoppingCart /> Comprar
                     </button>

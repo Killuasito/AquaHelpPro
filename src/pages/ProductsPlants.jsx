@@ -75,7 +75,6 @@ const ProductsPlants = () => {
       image:
         "https://www.aquaplantados.com.br/image/cache/catalog/PLANTAS/Anubias%20barteri%20var.%20nana-800x800.jpg",
       description: "Planta de fácil manutenção ideal para aquários plantados",
-      stock: 15,
       category: "plantas",
       difficulty: "fácil",
       specifications: [
@@ -314,11 +313,6 @@ const ProductsPlants = () => {
                     alt={product.name}
                     className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  {product.stock <= 5 && product.stock > 0 && (
-                    <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
-                      Últimas unidades
-                    </span>
-                  )}
                   {product.difficulty === "fácil" && (
                     <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
                       <FaSeedling className="text-xs" /> Para Iniciantes
@@ -355,15 +349,6 @@ const ProductsPlants = () => {
                     <span className="text-2xl font-bold text-green-600">
                       R$ {product.price.toFixed(2)}
                     </span>
-                    <span
-                      className={`text-sm ${
-                        product.stock > 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {product.stock > 0
-                        ? `${product.stock} em estoque`
-                        : "Indisponível"}
-                    </span>
                   </div>
 
                   {/* Add action buttons */}
@@ -376,8 +361,7 @@ const ProductsPlants = () => {
                     </button>
                     <button
                       onClick={() => handleAddToCart(product)}
-                      disabled={product.stock === 0}
-                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                     >
                       <FaShoppingCart /> Comprar
                     </button>

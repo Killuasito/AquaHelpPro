@@ -48,7 +48,6 @@ const ProductsFish = () => {
       image:
         "https://aquariopedia.com.br/wp-content/uploads/2022/12/Peixe-de-aquario-betta-splendens-macho-da-cor-azul.jpg",
       description: "Betta macho com cores vibrantes e cauda exuberante",
-      stock: 10,
       category: "peixes",
       specifications: [
         { name: "Tamanho", value: "6-7 cm" },
@@ -71,7 +70,6 @@ const ProductsFish = () => {
       image:
         "https://www.solaqua.net/WebRoot/Store/Shops/3311-141118/5B7E/DEE3/C3BB/6E96/8538/25E6/6498/D8D1/guppy.jpg",
       description: "Pequeno, vibrante e fácil de cuidar. Reproduz rapidamente.",
-      stock: 25,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -96,7 +94,6 @@ const ProductsFish = () => {
       image:
         "https://images.tcdn.com.br/img/img_prod/648834/tetra_neon_verdadeiro_paracheirodon_innesi_4373_1_a875d85d71c43eee55728f28f40b2177.jpg",
       description: "Peixe pequeno com cores brilhantes azul e vermelho.",
-      stock: 40,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -121,7 +118,6 @@ const ProductsFish = () => {
         "https://aquastuchi.com.br/wp-content/uploads/2024/07/Molly-Gold-Black-Lyratail-1.jpg",
       description:
         "Peixe resistente disponível em várias cores. Fácil de cuidar e reproduz rapidamente.",
-      stock: 18,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -146,7 +142,6 @@ const ProductsFish = () => {
         "https://upload.wikimedia.org/wikipedia/commons/0/00/Corydoras_melanotaenia.JPG",
       description:
         "Peixe de fundo pacífico, útil para limpeza e com aparência simpática.",
-      stock: 15,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -171,7 +166,6 @@ const ProductsFish = () => {
         "https://cobasiblog.blob.core.windows.net/production-ofc/2021/05/fish-4718919_1920.png",
       description:
         "Peixe colorido fácil de cuidar, ideal para aquaristas iniciantes.",
-      stock: 22,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -195,7 +189,6 @@ const ProductsFish = () => {
       image:
         "https://s2-globorural.glbimg.com/vLWTg3hQFTaUpJHci7As3jeXTtk=/0x0:5616x3744/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_afe5c125c3bb42f0b5ae633b58923923/internal_photos/bs/2024/q/b/SyhKYbQsmOHCrMAjR0lQ/gettyimages-185331043.jpg",
       description: "Peixe ornamental clássico, existem diversas variedades.",
-      stock: 8,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -221,7 +214,6 @@ const ProductsFish = () => {
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3sxo1Un6pLBmYcvDAxG8RLMArwqLo5YiesDFp8dpha6uZ9pQP0gQMvLyCVmCW9QXKbOd-g3VXJNHM94wbwGlNiQ",
       description:
         "Peixe ativo com padrões de listras que lembram uma zebra, ideal para iniciantes.",
-      stock: 30,
       category: "peixes",
       temperament: "Pacífico/Ativo",
       specifications: [
@@ -246,7 +238,6 @@ const ProductsFish = () => {
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCOTWVIuv7xzmYqyP483PZm5JovgqOvVHVdg&s",
       description:
         "Peixe com cores vibrantes, perfeito para aquários específicos de espécie.",
-      stock: 8,
       category: "peixes",
       temperament: "Variável",
       specifications: [
@@ -271,7 +262,6 @@ const ProductsFish = () => {
         "https://www.georgiaaquarium.org/wp-content/uploads/2018/09/discus-3.jpg",
       description:
         "Conhecido como o rei dos aquários, com cores e padrões deslumbrantes.",
-      stock: 6,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -297,7 +287,6 @@ const ProductsFish = () => {
         "https://images.tcdn.com.br/img/img_prod/749804/botia_palhaco_5_a_7_cm_chromobotia_macracanthus_1035_1_0053208677157f9d7630a8a7ba2ce3a2.jpg",
       description:
         "Peixe de fundo colorido e ativo, excelente para controle de caramujos.",
-      stock: 10,
       category: "peixes",
       temperament: "Pacífico/Ativo",
       specifications: [
@@ -322,7 +311,6 @@ const ProductsFish = () => {
         "https://cobasiblog.blob.core.windows.net/production-ofc/2022/12/3-3.png",
       description:
         "Pequeno peixe com formato de machado, nada na superfície da água.",
-      stock: 12,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -347,7 +335,6 @@ const ProductsFish = () => {
       image:
         "https://img.freepik.com/fotos-premium/peixe-oscar-astronotus-ocellatus-peixes-de-agua-doce-tropicais-no-aquario-oscar-tigre-ciclideo-de-veludo-peixes-da-familia-dos-ciclideos-na-tropical-america-do-sul-os-ciclideos-mais-populares-no-hobby-de-aquarios_85672-2130.jpg",
       description: "Peixe ciclidídeo grande e inteligente, reconhece seu dono.",
-      stock: 6,
       category: "peixes",
       temperament: "Territorial",
       specifications: [
@@ -372,7 +359,6 @@ const ProductsFish = () => {
         "https://images.tcdn.com.br/img/img_prod/749804/cascudo_ancistrus_spotted_veu_l144_1049_1_2ab13adb67aaf2fde97fed3edb27494d.jpg",
       description:
         "Peixe de fundo que ajuda no controle de algas, excelente para limpeza.",
-      stock: 15,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -397,7 +383,6 @@ const ProductsFish = () => {
         "https://cdn.interago.com.br/img/webp/w_0_q_8/5/mc/Novo%20cat%C3%A1logo/Colisa%20Lalia/ColisaFundo",
       description:
         "Pequeno peixe labirinto com cores vibrantes, alternativa ao Betta.",
-      stock: 15,
       category: "peixes",
       temperament: "Semi-agressivo",
       specifications: [
@@ -422,7 +407,6 @@ const ProductsFish = () => {
         "https://www.aquarismopaulista.com/wp-content/uploads/2018/09/Moenkhausia-pittieri.jpg",
       description:
         "Peixe de cardume com escamas prateadas reluzentes e nadadeiras avermelhadas.",
-      stock: 25,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -446,7 +430,6 @@ const ProductsFish = () => {
       image: "https://www.baseflora.com/img/article/0011-1.jpg",
       description:
         "Peixe anjo de grande porte da Amazônia, mais raro que o escalare comum.",
-      stock: 4,
       category: "peixes",
       temperament: "Semi-agressivo",
       specifications: [
@@ -472,7 +455,6 @@ const ProductsFish = () => {
         "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgco69Y7nLtM8cdQHOV35XmOuDMQBZst1C4EMOWmUAGfifVEjgnODULX0rWksbNFraclB5ff-ReNWTf4aPgntAMG8DkGKgNP0H0Guf8RKAaBmnpfL6zSc2p87m628g3Qdi3lEmZPzheReY/s1600/Neocaridina_heteropodavarred.jpg",
       description:
         "Camarão pequeno com coloração vermelha intensa, excelente para aquários plantados.",
-      stock: 30,
       category: "invertebrados",
       temperament: "Pacífico",
       specifications: [
@@ -497,7 +479,6 @@ const ProductsFish = () => {
         "https://images.tcdn.com.br/img/img_prod/648834/camarao_takashi_amano_caridina_multidentata_5_unidades_7779_9_42b3e269ba81465eca29f6b8ee987025.jpeg",
       description:
         "Camarão maior conhecido por seu eficiente trabalho no controle de algas.",
-      stock: 15,
       category: "invertebrados",
       temperament: "Pacífico",
       specifications: [
@@ -522,7 +503,6 @@ const ProductsFish = () => {
         "https://images.tcdn.com.br/img/img_prod/648834/neritina_zebra_2911_1_8d166e14d5686b1b9e659541fa25d1f9.jpg",
       description:
         "Caramujo com padrões listrados, excelente para controle de algas.",
-      stock: 20,
       category: "invertebrados",
       temperament: "Pacífico",
       specifications: [
@@ -547,7 +527,6 @@ const ProductsFish = () => {
         "https://www.petz.com.br/blog/wp-content/uploads/2020/03/tetra-negro-pet.jpg",
       description:
         "Peixe de cardume com corpo achatado lateralmente e coloração escura.",
-      stock: 35,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -572,7 +551,6 @@ const ProductsFish = () => {
         "https://images.tcdn.com.br/img/img_prod/648834/red_cristal_pure_red_line_prl_73_1_20190610164921.jpeg",
       description:
         "Camarão ornamental com padrões vermelho e branco cristalinos.",
-      stock: 10,
       category: "invertebrados",
       temperament: "Pacífico",
       specifications: [
@@ -598,7 +576,6 @@ const ProductsFish = () => {
         "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQNTllUMpZrpEUbKWN0sP7OWUmRPV2AV56txVnslyyiOzug5r3KpWA26qgD_kp9gW8eGTTbVDcpYRuK5f_uV6apdySJmyHH77GHtGbzBQ",
       description:
         "Ciclídeo anão colorido e pacífico, ótimo para aquários comunitários.",
-      stock: 8,
       category: "peixes",
       temperament: "Semi-agressivo",
       specifications: [
@@ -623,7 +600,6 @@ const ProductsFish = () => {
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXgQ8jeEaJgwQQOj8Yx4PqXsXyKWDatXGwVw&s",
       description:
         "Peixe ornamental japonês com padrões coloridos exclusivos. Tamanho pequeno.",
-      stock: 3,
       category: "peixes",
       temperament: "Pacífico",
       specifications: [
@@ -649,7 +625,6 @@ const ProductsFish = () => {
         "https://www.diario7.com.br/wp-content/uploads/2023/09/caramujo-caramujo-Physa-02-1-scaled.jpg",
       description:
         "Pequeno caramujo de crescimento rápido, útil para limpeza de aquários.",
-      stock: 50,
       category: "invertebrados",
       temperament: "Pacífico",
       specifications: [
@@ -874,106 +849,78 @@ const ProductsFish = () => {
         </div>
 
         {/* Product Grid */}
-        {filteredProducts.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-lg text-gray-600">
-              Nenhum produto encontrado com esse critério.
-            </p>
-          </div>
-        ) : (
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {paginatedProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
-                whileHover={{ y: -5 }}
-              >
-                <div className="relative">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  {product.stock <= 5 && product.stock > 0 && (
-                    <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
-                      Últimas unidades
-                    </span>
-                  )}
-                  {product.isNew && (
-                    <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs">
-                      Novo
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {paginatedProducts.map((product) => (
+            <motion.div
+              key={product.id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full"
+              whileHover={{ y: -5 }}
+            >
+              <div className="relative h-64 sm:h-80">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-gray-800 line-clamp-2">
+                    {product.name}
+                  </h3>
+                  {product.scientificName && (
+                    <span className="text-xs italic text-gray-500 ml-1">
+                      {product.scientificName}
                     </span>
                   )}
                 </div>
 
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-bold text-gray-800 line-clamp-2">
-                      {product.name}
-                    </h3>
-                    {product.scientificName && (
-                      <span className="text-xs italic text-gray-500 ml-1">
-                        {product.scientificName}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
-                      {product.type === "freshwater"
-                        ? "Água Doce"
-                        : "Água Salgada"}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
+                    {product.type === "freshwater"
+                      ? "Água Doce"
+                      : "Água Salgada"}
+                  </span>
+                  {product.temperament && (
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                      {product.temperament}
                     </span>
-                    {product.temperament && (
-                      <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
-                        {product.temperament}
-                      </span>
-                    )}
+                  )}
+                </div>
+
+                <div className="mb-4 flex-grow">
+                  <p className="text-gray-600 text-sm line-clamp-3">
+                    {product.description}
+                  </p>
+                </div>
+
+                <div className="mt-auto">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-2xl font-bold text-blue-600">
+                      R$ {product.price.toFixed(2)}
+                    </span>
                   </div>
 
-                  <div className="mb-4 flex-grow">
-                    <p className="text-gray-600 text-sm line-clamp-3">
-                      {product.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-auto">
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-2xl font-bold text-blue-600">
-                        R$ {product.price.toFixed(2)}
-                      </span>
-                      <span
-                        className={`text-sm ${
-                          product.stock > 0 ? "text-green-600" : "text-red-600"
-                        }`}
-                      >
-                        {product.stock > 0
-                          ? `${product.stock} em estoque`
-                          : "Indisponível"}
-                      </span>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setSelectedProduct(product)}
-                        className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        Detalhes
-                      </button>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        disabled={product.stock === 0}
-                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                      >
-                        <FaShoppingCart /> Comprar
-                      </button>
-                    </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setSelectedProduct(product)}
+                      className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                      Detalhes
+                    </button>
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <FaShoppingCart /> Comprar
+                    </button>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
