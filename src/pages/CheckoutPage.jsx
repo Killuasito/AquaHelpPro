@@ -144,6 +144,9 @@ const PaymentService = {
 };
 
 const CheckoutPage = () => {
+  // Add orderNumber state
+  const [orderNumber, setOrderNumber] = useState(null);
+
   const [step, setStep] = useState(1);
   const [paymentStatus, setPaymentStatus] = useState({
     processing: false,
@@ -547,10 +550,19 @@ const CheckoutPage = () => {
           transactionId: transactionId,
         };
 
-        const orderNumber = await sendOrderConfirmationEmail(orderData);
-        setOrderNumber(orderNumber);
-        clearCart();
-        setStep(4); // Ir direto para a página de confirmação
+        try {
+          const newOrderNumber = await sendOrderConfirmationEmail(orderData);
+          setOrderNumber(newOrderNumber);
+          clearCart();
+          setStep(4);
+        } catch (emailError) {
+          console.error("Erro ao enviar email:", emailError);
+          // Continue with order completion even if email fails
+          const generatedOrderNumber = getNextOrderNumber();
+          setOrderNumber(generatedOrderNumber);
+          clearCart();
+          setStep(4);
+        }
 
         // Limpar polling
         if (paymentPollingInterval) {

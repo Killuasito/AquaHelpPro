@@ -114,23 +114,17 @@ const ProductsEquipment = () => {
       id: 503,
       name: "Aquário de 28L",
       type: "other",
-      price: 199.9,
+      price: 100,
       image:
         "https://http2.mlstatic.com/D_NQ_NP_763841-MLB70902973730_082023-O.webp",
-      description:
-        "Kit aquário ideal para iniciantes, com capacidade de 28 litros",
+      description: "Aquário ideal para iniciantes, com capacidade de 28 litros",
       category: "equipamentos",
       specifications: [
         { name: "Capacidade", value: "28L" },
         { name: "Dimensões", value: "40x25x28cm" },
         { name: "Material", value: "Vidro 4mm" },
       ],
-      additionalInfo: [
-        "Vidro de alta transparência",
-        "Tampa com iluminação LED",
-        "Espaço para filtro e cabo",
-        "Ideal para peixes pequenos",
-      ],
+      additionalInfo: ["Vidro de alta transparência"],
     },
     {
       id: 504,
@@ -146,12 +140,7 @@ const ProductsEquipment = () => {
         { name: "Granulometria", value: "0.5-1.0mm" },
         { name: "Cobertura", value: "~5cm em aquário de 60L" },
       ],
-      additionalInfo: [
-        "100% natural e inerte",
-        "Não altera o pH da água",
-        "Ideal para peixes de fundo",
-        "Lavável e reutilizável",
-      ],
+      additionalInfo: ["Substrato de areia fina ideal para iniciantes"],
     },
     {
       id: 505,
